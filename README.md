@@ -60,6 +60,7 @@ Install dependencies:
 flutter pub get
 ### Project Structure
 lib/
+
 ├── bloc/
 
 │   ├── chat_bloc.dart
