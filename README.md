@@ -24,26 +24,36 @@
 This project integrates OpenAI's ChatGPT API using Flutter with a clean architecture approach. The app allows users to generate text and images through the ChatGPT model.
 
 ### Packages Used
-# flutter_bloc: State management
-# equatable: Simplifies equality comparisons
-# http: HTTP requests
-# get_it: Dependency injection
-# flutter_staggered_grid_view: Grid view layout
-# cached_network_image: For caching network images
-# share_plus: Sharing content
-# shimmer: Shimmer effect
-# Getting Started
-# API Key
-# Add your OpenAI API key in the constants file:
+ `flutter_bloc:` State management
+ 
+ `equatable:` Simplifies equality comparisons
+ 
+ `http:` HTTP requests
+ 
+ `get_it:` Dependency injection
+ 
+ `flutter_staggered_grid_view`: Grid view layout
+ 
+ `cached_network_image:` For caching network images
+ 
+ `share_plus:` Sharing content
+ 
+ `shimmer:` Shimmer effect
+ 
+ `Getting Started
+ 
+`API Key`
+
+`Add your OpenAI API key in the constants file:`
 
 # dart
 Copy code
-const String OPEN_AI_KEY = "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";
-const String baseURL = "https://api.openai.com/v1";
+const String `OPEN_AI_KEY` = `"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";`
+const String baseURL = `"https://api.openai.com/v1";`
 Installation
 ### Clone the repository:
 
-git clone https://github.com/jamalihassan0307/Flutter-ChatGPT-Text-and-image-generater.git
+git clone `https://github.com/jamalihassan0307/Flutter-ChatGPT-Text-and-image-generater.git`
 cd Flutter-ChatGPT-Text-and-image-generater
 Install dependencies:
 
@@ -51,18 +61,33 @@ flutter pub get
 ### Project Structure
 lib/
 ├── bloc/
+
 │   ├── chat_bloc.dart
+
 │   └── chat_event.dart
+
 │   └── chat_state.dart
+
 ├── models/
+
 │   └── chat_message.dart
+
 ├── repositories/
+
 │   └── chat_repository.dart
+
 ├── screens/
+
 │   ├── chat_screen.dart
+
 │   └── home_screen.dart
+
 ├── services/
+
 │   └── api_service.dart
+
 ├── utils/
+
 │   └── constants.dart
+
 └── main.dart
