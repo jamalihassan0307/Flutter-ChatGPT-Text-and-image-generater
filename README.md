@@ -46,11 +46,7 @@ This project integrates OpenAI's ChatGPT API using Flutter with a clean architec
 
 `Add your OpenAI API key in the constants file:`
 
-# dart
-Copy code
-const String `OPEN_AI_KEY` = `"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";`
-const String baseURL = `"https://api.openai.com/v1";`
-Installation
+
 ### Clone the repository:
 
 git clone `https://github.com/jamalihassan0307/Flutter-ChatGPT-Text-and-image-generater.git`
