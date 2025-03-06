@@ -7,11 +7,10 @@ import 'package:flutter_chatgpt/features/app/home/home_page.dart';
 import 'package:flutter_chatgpt/features/app/routes/on_generate_route.dart';
 import 'package:flutter_chatgpt/features/app/splash/splash_screen.dart';
 import 'package:flutter_chatgpt/features/image_generation/presentation/cubit/image_generation_cubit.dart';
-import 'package:flutter_chatgpt/features/image_generation/presentation/cubit/image_generation_cubit.dart';
 import 'package:flutter_chatgpt/features/text_completion/presentation/cubit/text_completion_cubit.dart';
 import 'injection_container.dart' as di;
 
-void main()async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = new MyHttpOverrides();
   await di.init();
@@ -29,7 +28,6 @@ class MyApp extends StatelessWidget {
         BlocProvider<ImageGenerationCubit>(
           create: (_) => di.sl<ImageGenerationCubit>(),
         ),
-
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
