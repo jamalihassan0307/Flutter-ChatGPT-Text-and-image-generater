@@ -17,7 +17,7 @@ class OnGenerateRoute {
       case PageConst.ImageGenerationPage:
         {
           return materialBuilder(
-            widget: ImageGenerationPage(),
+            widget: const ImageGenerationPage(),
           );
         }
       case PageConst.textCompletionPage:
