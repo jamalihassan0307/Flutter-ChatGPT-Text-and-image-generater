@@ -29,6 +29,42 @@ class _TextCompletionPageState extends State<TextCompletionPage> {
     super.dispose();
   }
 
+  Widget _buildFormattedText(String text) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[100],
+              height: 1.5,
+            ),
+          ),
+          Divider(color: Colors.grey[700]),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                DateTime.now().toString().substring(0, 16),
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,25 +92,26 @@ class _TextCompletionPageState extends State<TextCompletionPage> {
                     itemBuilder: (BuildContext context, int index) {
                       final text = response.candidates[index].content.parts.first.text;
                       return Card(
+                        margin: EdgeInsets.all(8),
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(16),
                           child: Column(
                             children: [
-                              Text(
-                                text,
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              SizedBox(height: 30),
+                              _buildFormattedText(text),
+                              SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  InkWell(onTap: () => Share.share(text), child: Icon(Icons.share, size: 35)),
-                                  InkWell(
-                                      onTap: () => Clipboard.setData(ClipboardData(text: text)),
-                                      child: Icon(Icons.copy, size: 35)),
+                                  IconButton(
+                                    icon: Icon(Icons.share),
+                                    onPressed: () => Share.share(text),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.copy),
+                                    onPressed: () => Clipboard.setData(ClipboardData(text: text)),
+                                  ),
                                 ],
                               ),
-                              SizedBox(height: 10),
                             ],
                           ),
                         ),
