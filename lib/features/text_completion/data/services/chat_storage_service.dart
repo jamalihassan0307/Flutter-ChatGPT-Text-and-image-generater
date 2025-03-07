@@ -1,26 +1,16 @@
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
+import 'database_service.dart';
 
 class ChatStorageService {
-  static const String _key = 'chat_history';
-  final SharedPreferences _prefs;
+  final DatabaseService _db;
 
-  ChatStorageService(this._prefs);
+  ChatStorageService(this._db);
 
   Future<void> saveMessage(ChatMessage message) async {
-    final messages = await getMessages();
-    messages.add(message);
-    final jsonList = messages.map((m) => jsonEncode(m.toJson())).toList();
-    await _prefs.setStringList(_key, jsonList);
+    await _db.saveMessage(message);
   }
 
-  Future<List<ChatMessage>> getMessages() async {
-    final jsonList = _prefs.getStringList(_key) ?? [];
-    return jsonList.map((str) => ChatMessage.fromJson(jsonDecode(str))).toList();
-  }
-
-  Future<void> clearMessages() async {
-    await _prefs.remove(_key);
+  Future<List<ChatMessage>> getMessages(int conversationId) async {
+    return await _db.getMessages(conversationId);
   }
 }

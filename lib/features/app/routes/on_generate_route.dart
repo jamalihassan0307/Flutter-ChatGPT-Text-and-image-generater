@@ -5,7 +5,7 @@ import 'package:flutter_chatgpt_text_and_image_processing/features/text_completi
 
 class OnGenerateRoute {
   static Route<dynamic> route(RouteSettings settings) {
-    final args = settings.arguments;
+    // final args = settings.arguments;
 
     switch (settings.name) {
       case "/":
