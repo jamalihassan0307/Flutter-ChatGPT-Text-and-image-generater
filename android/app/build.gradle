@@ -27,7 +27,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     namespace "com.example.flutter_chatgpt_text_and_image_processing"
-    compileSdkVersion 34
+    compileSdkVersion rootProject.ext.compileSdkVersion
     ndkVersion "25.1.8937393"
 
     compileOptions {
@@ -38,7 +38,7 @@ android {
     defaultConfig {
         applicationId "com.example.flutter_chatgpt_text_and_image_processing"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion rootProject.ext.compileSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
