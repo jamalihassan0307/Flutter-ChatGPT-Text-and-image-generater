@@ -23,7 +23,7 @@ class OnGenerateRoute {
       case PageConst.textCompletionPage:
         {
           return materialBuilder(
-            widget: TextCompletionPage(),
+            widget: const TextCompletionPage(),
           );
         }
       default:
@@ -35,6 +35,8 @@ class OnGenerateRoute {
 }
 
 class ErrorPage extends StatelessWidget {
+  const ErrorPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
