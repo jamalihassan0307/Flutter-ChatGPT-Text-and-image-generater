@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
 
 class ChatStorageService {
@@ -17,12 +17,10 @@ class ChatStorageService {
 
   Future<List<ChatMessage>> getMessages() async {
     final jsonList = _prefs.getStringList(_key) ?? [];
-    return jsonList
-        .map((str) => ChatMessage.fromJson(jsonDecode(str)))
-        .toList();
+    return jsonList.map((str) => ChatMessage.fromJson(jsonDecode(str))).toList();
   }
 
   Future<void> clearMessages() async {
     await _prefs.remove(_key);
   }
-} 
+}
