@@ -2,29 +2,29 @@ part of 'text_completion_cubit.dart';
 
 abstract class TextCompletionState extends Equatable {
   const TextCompletionState();
-}
 
-class TextCompletionInitial extends TextCompletionState {
   @override
   List<Object> get props => [];
 }
 
-class TextCompletionLoading extends TextCompletionState {
-  @override
-  List<Object> get props => [];
-}
+class TextCompletionInitial extends TextCompletionState {}
+
+class TextCompletionLoading extends TextCompletionState {}
+
 class TextCompletionLoaded extends TextCompletionState {
-  final TextCompletionModel textCompletionModelData;
+  final GeminiResponseModel geminiResponse;
 
-  TextCompletionLoaded({required this.textCompletionModelData});
+  const TextCompletionLoaded(this.geminiResponse);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [geminiResponse];
 }
 
-class TextCompletionFailure extends TextCompletionState {
-  final String? errorMsg;
+class TextCompletionError extends TextCompletionState {
+  final String message;
 
-  TextCompletionFailure({this.errorMsg});
+  const TextCompletionError({required this.message});
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [message];
 }

@@ -1,8 +1,6 @@
-
-
 import 'package:flutter/material.dart';
-import 'package:flutter_chatgpt/features/app/app_const/page_const.dart';
-import 'package:flutter_chatgpt/features/app/home/widgets/home_button_widget.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/app/app_const/page_const.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/app/home/widgets/home_button_widget.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -45,7 +43,10 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
-            Text("ChatGPT: Optimizing Language Models for Dialogue",style: TextStyle(color: Colors.grey),),
+            Text(
+              "ChatGPT: Optimizing Language Models for Dialogue",
+              style: TextStyle(color: Colors.grey),
+            ),
           ],
         ),
       ),

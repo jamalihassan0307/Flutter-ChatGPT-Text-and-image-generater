@@ -1,29 +1,24 @@
-
-
 import 'dart:convert';
 
-import 'package:flutter_chatgpt/core/custom_exceptions.dart';
-import 'package:flutter_chatgpt/core/open_ai_data.dart';
-import 'package:flutter_chatgpt/features/global/provider/provider.dart';
-import 'package:flutter_chatgpt/features/text_completion/data/model/text_completion_model.dart';
-import 'package:flutter_chatgpt/features/text_completion/data/remote_data_source/text_completion_remote_data_source.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/core/custom_exceptions.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/core/open_ai_data.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/global/provider/provider.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/text_completion/data/model/text_completion_model.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/text_completion/data/remote_data_source/text_completion_remote_data_source.dart';
 import 'package:http/http.dart' as http;
 
-class TextCompletionRemoteDataSourceImpl implements TextCompletionRemoteDataSource{
-
+class TextCompletionRemoteDataSourceImpl implements TextCompletionRemoteDataSource {
   final http.Client httpClient;
 
   TextCompletionRemoteDataSourceImpl({required this.httpClient});
 
-
-
   @override
-  Future<TextCompletionModel> getTextCompletion(String query)async {
+  Future<TextCompletionModel> getTextCompletion(String query) async {
     final String _endPoint = "completions";
 
     Map<String, String> rowParams = {
-      "model":"text-davinci-003",
-      "prompt":query,
+      "model": "text-davinci-003",
+      "prompt": query,
     };
 
     final encodedParams = json.encode(rowParams);
@@ -40,5 +35,4 @@ class TextCompletionRemoteDataSourceImpl implements TextCompletionRemoteDataSour
       throw ServerException(message: "Text Completion Server Exception");
     }
   }
-
 }

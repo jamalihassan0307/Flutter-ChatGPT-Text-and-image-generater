@@ -1,13 +1,11 @@
-
-
 import 'package:flutter/material.dart';
-import 'package:flutter_chatgpt/features/global/common/common.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/global/common/common.dart';
 
 class HomeButtonWidget extends StatelessWidget {
   final String textData;
   final IconData iconData;
   final VoidCallback? onTap;
-  const HomeButtonWidget({Key? key,required this.textData,this.onTap,required this.iconData}) : super(key: key);
+  const HomeButtonWidget({Key? key, required this.textData, this.onTap, required this.iconData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +21,16 @@ class HomeButtonWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           boxShadow: glowBoxShadow,
         ),
-        child:
-        Row(
+        child: Row(
           children: [
-            Icon(iconData,size: 40,),
-            SizedBox(width: 10,),
-            Text(textData, style: TextStyle(color: Colors.white, fontSize: 18,fontWeight: FontWeight.w600)),
+            Icon(
+              iconData,
+              size: 40,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(textData, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
           ],
         ),
       ),

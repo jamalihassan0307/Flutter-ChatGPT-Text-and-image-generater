@@ -1,4 +1,4 @@
-import 'package:flutter_chatgpt/features/text_completion/data/model/text_completion_data.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/text_completion/data/model/text_completion_data.dart';
 
 class TextCompletionModel {
   final num created;
@@ -8,9 +8,8 @@ class TextCompletionModel {
 
   factory TextCompletionModel.fromJson(Map<String, dynamic> json) {
     final textCompletionItems = json['choices'] as List;
-    List<TextCompletionData> choices = textCompletionItems
-        .map((singleItem) => TextCompletionData.fromJson(singleItem))
-        .toList();
+    List<TextCompletionData> choices =
+        textCompletionItems.map((singleItem) => TextCompletionData.fromJson(singleItem)).toList();
 
     return TextCompletionModel(
       choices: choices,

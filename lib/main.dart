@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chatgpt/core/http_certificate_maneger.dart';
-import 'package:flutter_chatgpt/features/app/home/home_page.dart';
-import 'package:flutter_chatgpt/features/app/routes/on_generate_route.dart';
-import 'package:flutter_chatgpt/features/app/splash/splash_screen.dart';
-import 'package:flutter_chatgpt/features/image_generation/presentation/cubit/image_generation_cubit.dart';
-import 'package:flutter_chatgpt/features/text_completion/presentation/cubit/text_completion_cubit.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/core/http_certificate_maneger.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/app/home/home_page.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/app/routes/on_generate_route.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/app/splash/splash_screen.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/image_generation/presentation/cubit/image_generation_cubit.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/text_completion/presentation/cubit/text_completion_cubit.dart';
 import 'injection_container.dart' as di;
 
 void main() async {
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           "/": (context) {
-            return SplashScreen(
+            return const SplashScreen(
               child: HomePage(),
             );
           }

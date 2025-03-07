@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chatgpt/features/global/search_text_field/search_text_field_widget.dart';
-import 'package:flutter_chatgpt/features/text_completion/presentation/cubit/text_completion_cubit.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/global/search_text_field/search_text_field_widget.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/text_completion/presentation/cubit/text_completion_cubit.dart';
 import 'package:share_plus/share_plus.dart';
 
 class TextCompletionPage extends StatefulWidget {
@@ -33,7 +33,7 @@ class _TextCompletionPageState extends State<TextCompletionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Text Completion Page"),
+        title: Text("Gemini Text Completion"),
       ),
       body: Center(
         child: Column(children: [
@@ -42,55 +42,39 @@ class _TextCompletionPageState extends State<TextCompletionPage> {
               builder: (context, textCompletionState) {
                 if (textCompletionState is TextCompletionLoading) {
                   return Center(
-                    child: Container(
-                        width: 300,
-                        height: 300,
-                        child: Image.asset("assets/loading.gif")),
+                    child: Container(width: 300, height: 300, child: Image.asset("assets/loading.gif")),
                   );
                 }
                 if (textCompletionState is TextCompletionLoaded) {
-                  final choicesData =
-                      textCompletionState.textCompletionModelData.choices;
+                  final response = textCompletionState.geminiResponse;
+                  if (response.candidates.isEmpty) {
+                    return Center(child: Text("No response generated"));
+                  }
 
                   return ListView.builder(
-                    itemCount: choicesData.length,
+                    itemCount: response.candidates.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final textData = choicesData[index];
+                      final text = response.candidates[index].content.parts.first.text;
                       return Card(
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
                               Text(
-                                textData.text,
+                                text,
                                 style: TextStyle(fontSize: 18),
                               ),
-                              SizedBox(
-                                height: 30,
-                              ),
+                              SizedBox(height: 30),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
+                                  InkWell(onTap: () => Share.share(text), child: Icon(Icons.share, size: 35)),
                                   InkWell(
-                                      onTap: () {
-                                        Share.share(textData.text);
-                                      },
-                                      child: Icon(Icons.share, size: 35)),
-                                  InkWell(
-                                      onTap: () {
-                                        Clipboard.setData(
-                                            ClipboardData(text: textData.text));
-                                      },
-                                      child: Icon(
-                                        Icons.copy,
-                                        size: 35,
-                                      )),
+                                      onTap: () => Clipboard.setData(ClipboardData(text: text)),
+                                      child: Icon(Icons.copy, size: 35)),
                                 ],
                               ),
-                              SizedBox(
-                                height: 10,
-                              ),
+                              SizedBox(height: 10),
                             ],
                           ),
                         ),
@@ -98,9 +82,12 @@ class _TextCompletionPageState extends State<TextCompletionPage> {
                     },
                   );
                 }
+                if (textCompletionState is TextCompletionError) {
+                  return Center(child: Text(textCompletionState.message));
+                }
                 return Center(
                     child: Text(
-                  "OpenAI Text Completion",
+                  "Gemini Text Completion",
                   style: TextStyle(fontSize: 20, color: Colors.grey),
                 ));
               },
@@ -109,13 +96,13 @@ class _TextCompletionPageState extends State<TextCompletionPage> {
           SearchTextFieldWidget(
               textEditingController: _searchTextController,
               onTap: () {
-                BlocProvider.of<TextCompletionCubit>(context)
-                    .textCompletion(query: _searchTextController.text)
-                    .then((value) => _clearTextField());
+                if (_searchTextController.text.isNotEmpty) {
+                  BlocProvider.of<TextCompletionCubit>(context)
+                      .textCompletion(query: _searchTextController.text)
+                      .then((value) => _clearTextField());
+                }
               }),
-          SizedBox(
-            height: 20,
-          ),
+          SizedBox(height: 20),
         ]),
       ),
     );

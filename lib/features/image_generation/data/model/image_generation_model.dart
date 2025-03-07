@@ -1,6 +1,4 @@
-
-
-import 'package:flutter_chatgpt/features/image_generation/data/model/image_generation_data.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/image_generation/data/model/image_generation_data.dart';
 
 class ImageGenerationModel {
   final num created;
@@ -10,9 +8,8 @@ class ImageGenerationModel {
 
   factory ImageGenerationModel.fromJson(Map<String, dynamic> json) {
     final imageGenerationItems = json['data'] as List;
-    List<ImageGenerationData> imagesData = imageGenerationItems
-        .map((singleItem) => ImageGenerationData.fromJson(singleItem))
-        .toList();
+    List<ImageGenerationData> imagesData =
+        imageGenerationItems.map((singleItem) => ImageGenerationData.fromJson(singleItem)).toList();
 
     return ImageGenerationModel(
       data: imagesData,

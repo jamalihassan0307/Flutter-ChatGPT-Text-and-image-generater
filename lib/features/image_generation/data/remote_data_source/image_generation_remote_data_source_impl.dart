@@ -1,31 +1,26 @@
-
-
 import 'dart:convert';
 
-import 'package:flutter_chatgpt/core/custom_exceptions.dart';
-import 'package:flutter_chatgpt/core/open_ai_data.dart';
-import 'package:flutter_chatgpt/features/global/provider/provider.dart';
-import 'package:flutter_chatgpt/features/image_generation/data/model/image_generation_model.dart';
-import 'package:flutter_chatgpt/features/image_generation/data/remote_data_source/image_generation_remote_data_source.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/core/custom_exceptions.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/core/open_ai_data.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/global/provider/provider.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/image_generation/data/model/image_generation_model.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/image_generation/data/remote_data_source/image_generation_remote_data_source.dart';
 import 'package:http/http.dart' as http;
 
-class ImageGenerationRemoteDataSourceImpl implements ImageGenerationRemoteDataSource{
-
+class ImageGenerationRemoteDataSourceImpl implements ImageGenerationRemoteDataSource {
   final http.Client httpClient;
 
   ImageGenerationRemoteDataSourceImpl({required this.httpClient});
 
-
-
   @override
-  Future<ImageGenerationModel> getGenerateImages(String query)async {
+  Future<ImageGenerationModel> getGenerateImages(String query) async {
     final String _endPoint = "images/generations";
 
     // ['256x256', '512x512', '1024x1024']
     Map<String, dynamic> rowParams = {
-      "n":10,
-      "size":"256x256",
-      "prompt":query,
+      "n": 10,
+      "size": "256x256",
+      "prompt": query,
     };
 
     final encodedParams = json.encode(rowParams);
@@ -41,9 +36,5 @@ class ImageGenerationRemoteDataSourceImpl implements ImageGenerationRemoteDataSo
     } else {
       throw ServerException(message: "Image Generation Server Exception");
     }
-
-
-
   }
-
 }

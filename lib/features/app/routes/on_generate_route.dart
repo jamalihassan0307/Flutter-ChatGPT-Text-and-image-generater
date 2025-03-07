@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chatgpt/features/app/app_const/page_const.dart';
-import 'package:flutter_chatgpt/features/image_generation/presentation/pages/image_generation_page.dart';
-import 'package:flutter_chatgpt/features/text_completion/presentation/pages/text_completion_page.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/app/app_const/page_const.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/image_generation/presentation/pages/image_generation_page.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/features/text_completion/presentation/pages/text_completion_page.dart';
 
 class OnGenerateRoute {
   static Route<dynamic> route(RouteSettings settings) {
