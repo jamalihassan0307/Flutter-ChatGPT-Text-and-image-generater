@@ -149,6 +149,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
           ChatInput(
             controller: _textController,
+            isLoading: _isLoading,
             onSend: () {
               if (_textController.text.isNotEmpty) {
                 if (currentChat == null) {

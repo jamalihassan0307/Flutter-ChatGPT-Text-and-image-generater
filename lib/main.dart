@@ -9,8 +9,14 @@ import 'data/providers/app_providers.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables
-  await dotenv.load(fileName: ".env");
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint('Error loading .env file: $e');
+    // Set default values or handle the error appropriately
+    dotenv.env['GEMINI_API_KEY'] = 'your_default_key_here';
+    dotenv.env['GEMINI_BASE_URL'] = 'https://generativelanguage.googleapis.com/v1beta';
+  }
 
   final prefs = await SharedPreferences.getInstance();
 
