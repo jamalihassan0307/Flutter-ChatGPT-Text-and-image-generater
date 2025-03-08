@@ -9,11 +9,13 @@ import 'package:flutter_chatgpt_text_and_image_processing/features/app/splash/sp
 import 'package:flutter_chatgpt_text_and_image_processing/features/image_generation/presentation/cubit/image_generation_cubit.dart';
 import 'package:flutter_chatgpt_text_and_image_processing/features/text_completion/presentation/cubit/text_completion_cubit.dart';
 import 'injection_container.dart' as di;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = new MyHttpOverrides();
   await di.init();
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 
