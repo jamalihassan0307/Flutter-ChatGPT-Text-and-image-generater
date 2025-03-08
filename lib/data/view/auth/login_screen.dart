@@ -202,7 +202,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             // Sign Up Link
                             TextButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, RoutesName.signup);
+                                Navigator.pushNamedAndRemoveUntil(context, RoutesName.signup, (route) => false);
                               },
                               child: const Text(
                                 "Don't have an account? Sign up",

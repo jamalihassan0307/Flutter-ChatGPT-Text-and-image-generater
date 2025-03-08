@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatgpt_text_and_image_processing/data/models/saved_user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../configs/utils.dart';
-import '../../providers/theme_provider.dart';
+import '../../../configs/constants/app_images.dart';
+import '../../../configs/theme/app_theme.dart';
+import '../../../configs/routes/routes_name.dart';
 import '../../services/shared_prefs_service.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -15,132 +18,274 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = ref.watch(themeProvider);
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+      body: Stack(
         children: [
-          // Profile Header
-          const CircleAvatar(
-            radius: 50,
-            child: Icon(Icons.person, size: 50),
-          ),
-          const SizedBox(height: 16),
-          const Center(
-            child: Text(
-              'John Doe', // Replace with actual user name
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+          // Background Image
+          Positioned.fill(
+            child: CachedNetworkImage(
+              imageUrl: '${AppImages.profileBg}?auto=format&fit=crop&w=800&q=80',
+              fit: BoxFit.cover,
+              color: Colors.black.withOpacity(0.7),
+              colorBlendMode: BlendMode.darken,
             ),
           ),
-          const SizedBox(height: 32),
-
-          // Settings Section
-          const Text(
-            'Settings',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          
-          // Theme Toggle
-          ListTile(
-            leading: Icon(
-              isDarkMode ? Icons.dark_mode : Icons.light_mode,
-            ),
-            title: const Text('Dark Mode'),
-            trailing: Switch(
-              value: isDarkMode,
-              onChanged: (value) {
-                ref.read(themeProvider.notifier).toggleTheme();
-              },
-            ),
-          ),
-
-          // Saved Users
-          ListTile(
-            leading: const Icon(Icons.people),
-            title: const Text('Saved Users'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) => _SavedUsersSheet(),
-              );
-            },
-          ),
-
-          // Clear Chat History
-          ListTile(
-            leading: const Icon(Icons.delete_outline),
-            title: const Text('Clear Chat History'),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Clear Chat History'),
-                  content: const Text(
-                    'Are you sure you want to clear all chat history? This action cannot be undone.',
+          // Content
+          SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                // App Bar
+                SliverAppBar(
+                  backgroundColor: Colors.transparent,
+                  expandedHeight: 200,
+                  pinned: true,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.7),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                    title: const Text('Profile'),
+                    centerTitle: true,
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // TODO: Implement clear chat history
-                        Navigator.pop(context);
-                        Utils.flushBarSuccessMessage(
-                          'Chat history cleared',
-                          context,
-                        );
-                      },
-                      child: const Text('Clear'),
-                    ),
-                  ],
                 ),
-              );
-            },
-          ),
 
-          // Logout
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Logout'),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Logout'),
-                  content: const Text('Are you sure you want to logout?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                // Profile Info
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      children: [
+                        // Profile Picture
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppTheme.primaryColor,
+                                  width: 3,
+                                ),
+                              ),
+                              child: const CircleAvatar(
+                                radius: 55,
+                                backgroundColor: Colors.white24,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 50,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: AppTheme.primaryColor,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.edit,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        const Text(
+                          'John Doe',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Text(
+                          'john.doe@example.com',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Stats
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildStatItem('Chats', '23'),
+                            _buildStatItem('Messages', '142'),
+                            _buildStatItem('Images', '15'),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Settings Section
+                        _buildSettingsSection(),
+                      ],
                     ),
-                    TextButton(
-                      onPressed: () {
-                        // TODO: Implement logout
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Logout'),
-                    ),
-                  ],
+                  ),
                 ),
-              );
-            },
+              ],
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatItem(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Settings',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        _buildSettingsTile(
+          icon: Icons.people,
+          title: 'Saved Users',
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (context) => _SavedUsersSheet(),
+            );
+          },
+        ),
+        _buildSettingsTile(
+          icon: Icons.notifications,
+          title: 'Notifications',
+          onTap: () {
+            // TODO: Implement notifications settings
+          },
+        ),
+        _buildSettingsTile(
+          icon: Icons.delete_outline,
+          title: 'Clear Chat History',
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Clear Chat History'),
+                content: const Text(
+                  'Are you sure you want to clear all chat history? This action cannot be undone.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // TODO: Implement clear chat history
+                      Navigator.pop(context);
+                      Utils.flushBarSuccessMessage(
+                        'Chat history cleared',
+                        context,
+                      );
+                    },
+                    child: const Text('Clear'),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        _buildSettingsTile(
+          icon: Icons.logout,
+          title: 'Logout',
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Logout'),
+                content: const Text('Are you sure you want to logout?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        RoutesName.login,
+                        (route) => false,
+                      );
+                    },
+                    child: const Text('Logout'),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSettingsTile({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.white70),
+      title: Text(
+        title,
+        style: const TextStyle(color: Colors.white),
+      ),
+      trailing: const Icon(Icons.chevron_right, color: Colors.white70),
+      onTap: onTap,
     );
   }
 }
@@ -150,6 +295,12 @@ class _SavedUsersSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,7 +318,10 @@ class _SavedUsersSheet extends StatelessWidget {
             builder: (context, snapshot) {
               if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return const Center(
-                  child: Text('No saved users found'),
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: Text('No saved users found'),
+                  ),
                 );
               }
 
@@ -198,4 +352,4 @@ class _SavedUsersSheet extends StatelessWidget {
       ),
     );
   }
-} 
+}

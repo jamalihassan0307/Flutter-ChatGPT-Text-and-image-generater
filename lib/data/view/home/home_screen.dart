@@ -32,6 +32,7 @@ class HomeScreen extends ConsumerWidget {
               slivers: [
                 // App Bar
                 SliverAppBar(
+                  automaticallyImplyLeading: false,
                   floating: true,
                   backgroundColor: Colors.transparent,
                   title: Row(
