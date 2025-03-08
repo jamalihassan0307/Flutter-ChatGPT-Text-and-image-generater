@@ -134,9 +134,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     itemCount: currentChat.messages.length + (_isLoading ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index == currentChat.messages.length) {
-                        return const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: LoadingWidget(),
+                        return Container(
+                          height: MediaQuery.of(context).size.height * 0.7,
+                          alignment: Alignment.center,
+                          child: const LoadingWidget(),
                         );
                       }
                       final message = currentChat.messages[index];

@@ -232,7 +232,7 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
                     fontSize: 16,
                   ),
                 ),
-                duration: const Duration(milliseconds: 3),
+                duration: const Duration(milliseconds: 1),
                 onFinished: (String value) {
                   setState(() {
                     _showFullText = true;
