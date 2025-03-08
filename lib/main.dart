@@ -36,8 +36,18 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Gemini AI',
       theme: ThemeData.dark().copyWith(
-        primaryColor: Colors.blue,
-        scaffoldBackgroundColor: Colors.black,
+        primaryColor: const Color(0xFF10A37F), // ChatGPT green
+        scaffoldBackgroundColor: const Color(0xFF343541), // Dark background
+        cardColor: const Color(0xFF444654), // Message bubble background
+        dividerColor: const Color(0xFF4D4D4D),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Color(0xFFD1D5DB)),
+          bodyMedium: TextStyle(color: Color(0xFFD1D5DB)),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF343541),
+          elevation: 0,
+        ),
       ),
       debugShowCheckedModeBanner: false,
       initialRoute: RoutesName.splash,
