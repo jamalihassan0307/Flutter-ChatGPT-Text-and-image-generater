@@ -536,14 +536,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.2"
-  rich_typewriter:
-    dependency: "direct main"
-    description:
-      name: rich_typewriter
-      sha256: "6d05f889e11d1ffa42268b713f01f7a47a654f142f46d3f09949934bbf6be5ba"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   riverpod:
     dependency: transitive
     description:
@@ -773,6 +765,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
+  typewritertext:
+    dependency: "direct main"
+    description:
+      name: typewritertext
+      sha256: c6b90cdc9f7fd7ae3235d9c926012000f7a1765cd49d67b78370dc61123212b2
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.9"
   url_launcher:
     dependency: transitive
     description:

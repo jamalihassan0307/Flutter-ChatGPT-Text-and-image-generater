@@ -1,18 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chatgpt_text_and_image_processing/configs/utils.dart';
-import 'package:rich_typewriter/rich_typewriter.dart';
+import 'package:typewritertext/typewritertext.dart';
 import '../../../models/chat_message.dart';
 
-class ChatMessageBubble extends StatelessWidget {
+class ChatMessageBubble extends StatefulWidget {
   final ChatMessage message;
   final VoidCallback onShare;
+  final bool isNewMessage;
 
   const ChatMessageBubble({
     super.key,
     required this.message,
     required this.onShare,
+    this.isNewMessage = false,
   });
+
+  @override
+  State<ChatMessageBubble> createState() => _ChatMessageBubbleState();
+}
+
+class _ChatMessageBubbleState extends State<ChatMessageBubble> {
+  bool _showFullText = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.isNewMessage) {
+      _showFullText = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +38,13 @@ class ChatMessageBubble extends StatelessWidget {
       children: [
         _buildMessageBubble(
           context,
-          message.query,
+          widget.message.query,
           isUser: true,
         ),
         const SizedBox(height: 8),
         _buildMessageBubble(
           context,
-          message.response,
+          widget.message.response,
           isUser: false,
         ),
       ],
@@ -39,13 +56,23 @@ class ChatMessageBubble extends StatelessWidget {
     final paragraphs = text.split('\n\n');
 
     for (final paragraph in paragraphs) {
-      if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-        // Headers
+      if (paragraph.startsWith('# ')) {
+        // H1 Headers
         spans.add(TextSpan(
-          text: '${paragraph.replaceAll('**', '')}\n',
+          text: '${paragraph.substring(2)}\n',
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 18,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ));
+      } else if (paragraph.startsWith('## ')) {
+        // H2 Headers
+        spans.add(TextSpan(
+          text: '${paragraph.substring(3)}\n',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ));
@@ -103,14 +130,27 @@ class ChatMessageBubble extends StatelessWidget {
                 text,
                 style: const TextStyle(color: Colors.white),
               )
-            else
-              RichTypewriter(
-                symbolDelay: (symbol) =>
-                    switch (symbol) { TextSpan(text: ' ') => 50, TextSpan(text: '\n') => 200, _ => 20 },
-                onCompleted: () => debugPrint('Finished typing response'),
-                child: SelectableText.rich(
-                  TextSpan(children: _processText(text)),
+            else if (_showFullText)
+              SelectableText(
+                text,
+                style: const TextStyle(
+                  color: Color(0xFFD1D5DB),
+                  fontSize: 16,
                 ),
+              )
+            else
+              TypeWriter(
+                text: text,
+                duration: const Duration(milliseconds: 30),
+                textStyle: const TextStyle(
+                  color: Color(0xFFD1D5DB),
+                  fontSize: 16,
+                ),
+                onEnd: () {
+                  setState(() {
+                    _showFullText = true;
+                  });
+                },
               ),
             if (!isUser) ...[
               const Divider(color: Color(0xFF4D4D4D)),
@@ -134,7 +174,7 @@ class ChatMessageBubble extends StatelessWidget {
                       size: 20,
                       color: Color(0xFFD1D5DB),
                     ),
-                    onPressed: onShare,
+                    onPressed: widget.onShare,
                   ),
                 ],
               ),

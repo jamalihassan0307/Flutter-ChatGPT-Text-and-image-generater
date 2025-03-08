@@ -143,6 +143,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       return ChatMessageBubble(
                         message: message,
                         onShare: () => Utils.share(message.response),
+                        isNewMessage: index == currentChat.messages.length - 1 && _isLoading,
                       );
                     },
                   ),

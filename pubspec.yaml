@@ -49,9 +49,9 @@ dependencies:
   provider: ^6.1.1
   flutter_riverpod: ^2.5.1
   shared_preferences: ^2.2.2
-  rich_typewriter: ^1.0.1
   uuid: ^4.3.3 # For unique chat IDs
   markdown_widget: ^2.3.2+3
+  typewritertext: ^3.0.9
 
 dev_dependencies:
   flutter_test:
