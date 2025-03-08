@@ -145,9 +145,13 @@ class _ThemeSettingsScreenState extends ConsumerState<ThemeSettingsScreen> {
             _buildColorButton(
               color: settings.userBubbleColor,
               label: 'User Bubble',
-              onTap: () => ref.read(themeSettingsProvider.notifier).updateThemeColors(
-                    userBubbleColor: settings.userBubbleColor,
-                  ),
+              onTap: () => _pickColor(
+                context,
+                settings.userBubbleColor,
+                (color) => ref.read(themeSettingsProvider.notifier).updateThemeColors(
+                      userBubbleColor: color,
+                    ),
+              ),
             ),
           ],
         ),

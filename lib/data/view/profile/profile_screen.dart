@@ -9,6 +9,7 @@ import '../../../configs/routes/routes_name.dart';
 import '../../services/shared_prefs_service.dart';
 import '../../providers/chat_provider.dart';
 import '../../../data/view/settings/theme_settings_screen.dart';
+import '../../providers/theme_settings_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -20,7 +21,8 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    final chats = ref.watch(chatProvider); // Get chats from provider
+    final chats = ref.watch(chatProvider);
+    final themeSettings = ref.watch(themeSettingsProvider);
 
     // Calculate stats
     final totalChats = chats.length;
@@ -39,20 +41,33 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
       body: Stack(
         children: [
-          // Background Image with error handling
+          // Updated Background Image
           Positioned.fill(
-            child: CachedNetworkImage(
-              imageUrl: '${AppImages.profileBg}?auto=format&fit=crop&w=800&q=80',
-              fit: BoxFit.cover,
-              color: Colors.black.withOpacity(0.7),
-              colorBlendMode: BlendMode.darken,
-              errorWidget: (context, url, error) => Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
-              ),
-              placeholder: (context, url) => Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
-              ),
-            ),
+            child: themeSettings.backgroundImage.startsWith('assets/')
+                ? Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(themeSettings.backgroundImage),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.7),
+                          BlendMode.darken,
+                        ),
+                      ),
+                    ),
+                  )
+                : CachedNetworkImage(
+                    imageUrl: themeSettings.backgroundImage,
+                    fit: BoxFit.cover,
+                    color: Colors.black.withOpacity(0.7),
+                    colorBlendMode: BlendMode.darken,
+                    errorWidget: (context, url, error) => Container(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                    ),
+                    placeholder: (context, url) => Container(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                    ),
+                  ),
           ),
           // Content
           SafeArea(
@@ -70,7 +85,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: AppTheme.primaryColor,
+                            color: themeSettings.primaryColor,
                             width: 3,
                           ),
                         ),
@@ -89,8 +104,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         bottom: 0,
                         child: Container(
                           padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: AppTheme.primaryColor,
+                          decoration: BoxDecoration(
+                            color: themeSettings.primaryColor,
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -155,10 +170,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _buildStatItem(String label, String value) {
+    final themeSettings = ref.watch(themeSettingsProvider);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: themeSettings.systemBubbleColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -306,13 +322,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     required String title,
     required VoidCallback onTap,
   }) {
+    final themeSettings = ref.watch(themeSettingsProvider);
     return ListTile(
-      leading: Icon(icon, color: Colors.white70),
+      tileColor: themeSettings.systemBubbleColor.withOpacity(0.1),
+      leading: Icon(icon, color: themeSettings.primaryColor),
       title: Text(
         title,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: themeSettings.primaryColor),
       ),
-      trailing: const Icon(Icons.chevron_right, color: Colors.white70),
+      trailing: Icon(Icons.chevron_right, color: themeSettings.primaryColor),
       onTap: onTap,
     );
   }
