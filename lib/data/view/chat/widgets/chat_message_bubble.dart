@@ -22,6 +22,7 @@ class ChatMessageBubble extends StatefulWidget {
 
 class _ChatMessageBubbleState extends State<ChatMessageBubble> {
   bool _showFullText = false;
+  final _textController = TextEditingController();
 
   @override
   void initState() {
@@ -29,6 +30,12 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
     if (!widget.isNewMessage) {
       _showFullText = true;
     }
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
   }
 
   @override
@@ -139,18 +146,24 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
                 ),
               )
             else
-              TypeWriter(
-                text: text,
-                duration: const Duration(milliseconds: 30),
-                textStyle: const TextStyle(
-                  color: Color(0xFFD1D5DB),
-                  fontSize: 16,
-                ),
-                onEnd: () {
+              TypeWriterText(
+                controller: _textController,
+                builder: (context, value) {
+                  return Text(
+                    value,
+                    style: const TextStyle(
+                      color: Color(0xFFD1D5DB),
+                      fontSize: 16,
+                    ),
+                  );
+                },
+                onComplete: () {
                   setState(() {
                     _showFullText = true;
                   });
                 },
+                text: Text(text),
+                duration: const Duration(milliseconds: 30),
               ),
             if (!isUser) ...[
               const Divider(color: Color(0xFF4D4D4D)),
