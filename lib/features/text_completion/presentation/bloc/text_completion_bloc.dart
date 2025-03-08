@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/services/gemini_api_service.dart';
+import 'text_completion_state.dart';
+import 'text_completion_event.dart';
 
 class TextCompletionBloc extends Bloc<TextCompletionEvent, TextCompletionState> {
   final GeminiApiService _apiService;
@@ -16,4 +18,4 @@ class TextCompletionBloc extends Bloc<TextCompletionEvent, TextCompletionState> 
       }
     });
   }
-} 
+}
