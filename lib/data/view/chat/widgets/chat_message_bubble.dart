@@ -56,7 +56,7 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
     final paragraphs = text.split('\n\n');
 
     for (final paragraph in paragraphs) {
-      if (paragraph.startsWith('# ')) {
+      if (paragraph.startsWith('#')) {
         // H1 Headers
         spans.add(TextSpan(
           text: paragraph.substring(2),
@@ -67,7 +67,7 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
             height: 2.0,
           ),
         ));
-      } else if (paragraph.startsWith('## ')) {
+      } else if (paragraph.startsWith('##')) {
         // H2 Headers
         spans.add(TextSpan(
           text: paragraph.substring(3),
@@ -78,7 +78,7 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
             height: 1.8,
           ),
         ));
-      } else if (paragraph.startsWith('### ')) {
+      } else if (paragraph.startsWith('###')) {
         // H3 Headers
         spans.add(TextSpan(
           text: paragraph.substring(4),
@@ -89,10 +89,10 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
             height: 1.6,
           ),
         ));
-      } else if (paragraph.startsWith('* ') || paragraph.startsWith('- ')) {
+      } else if (paragraph.startsWith('*') || paragraph.startsWith('-')) {
         // Bullet points
         spans.add(TextSpan(
-          text: '• ${paragraph.substring(2)}',
+          text: '• ${paragraph.substring(1)}',
           style: const TextStyle(
             color: Color(0xFFD1D5DB),
             height: 1.5,
