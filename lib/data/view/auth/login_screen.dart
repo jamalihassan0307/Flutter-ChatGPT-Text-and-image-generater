@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../configs/utils.dart';
 import '../../../configs/routes/routes_name.dart';
+import '../../../data/view/auth/widgets/saved_users_bottom_sheet.dart';
+import '../../../data/view/auth/widgets/save_user_bottom_sheet.dart';
+import '../../../data/services/shared_prefs_service.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -24,11 +27,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() {
+  void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      // TODO: Implement login logic
-      Utils.flushBarSuccessMessage("Login Successful", context);
-      Navigator.pushReplacementNamed(context, RoutesName.home);
+      setState(() => _isLoading = true);
+      try {
+        // TODO: Implement actual login logic
+        await Future.delayed(const Duration(seconds: 1));
+
+        Utils.flushBarSuccessMessage("Login Successful", context);
+
+        // Check if user is already saved
+        final existingUser = await SharedPrefsService.getSavedUser(_emailController.text);
+
+        // Show save/update prompt if not saved or password changed
+        if (mounted && (existingUser == null || existingUser.password != _passwordController.text)) {
+          await showModalBottomSheet(
+            context: context,
+            builder: (context) => SaveUserBottomSheet(
+              email: _emailController.text,
+              password: _passwordController.text,
+              name: null,
+              isUpdate: existingUser != null,
+            ),
+          );
+        }
+
+        Navigator.pushReplacementNamed(context, RoutesName.home);
+      } catch (e) {
+        Utils.flushBarErrorMessage(e.toString(), context);
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -65,6 +94,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     }
                     return null;
                   },
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) => SavedUsersBottomSheet(
+                        onUserSelected: (user) {
+                          _emailController.text = user.email;
+                          _passwordController.text = user.password;
+                        },
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
@@ -75,9 +115,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() {
@@ -125,4 +163,4 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ),
     );
   }
-} 
+}

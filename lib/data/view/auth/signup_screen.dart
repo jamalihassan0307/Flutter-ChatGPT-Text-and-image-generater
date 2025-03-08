@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/data/view/auth/widgets/save_user_bottom_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../configs/utils.dart';
 import '../../../configs/routes/routes_name.dart';
@@ -29,15 +30,35 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     super.dispose();
   }
 
-  void _handleSignup() {
+  void _handleSignup() async {
     if (_formKey.currentState!.validate()) {
-      if (_passwordController.text != _confirmPasswordController.text) {
-        Utils.flushBarErrorMessage('Passwords do not match', context);
-        return;
+      setState(() => _isLoading = true);
+      try {
+        // TODO: Implement actual signup logic
+        await Future.delayed(const Duration(seconds: 1)); // Simulate API call
+
+        Utils.flushBarSuccessMessage("Signup Successful", context);
+
+        // Show save user prompt
+        if (mounted) {
+          await showModalBottomSheet(
+            context: context,
+            builder: (context) => SaveUserBottomSheet(
+              email: _emailController.text,
+              password: _passwordController.text,
+              name: _usernameController.text,
+            ),
+          );
+        }
+
+        Navigator.pushReplacementNamed(context, RoutesName.home);
+      } catch (e) {
+        Utils.flushBarErrorMessage(e.toString(), context);
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
       }
-      // TODO: Implement signup logic
-      Utils.flushBarSuccessMessage('Account created successfully', context);
-      Navigator.pushReplacementNamed(context, RoutesName.login);
     }
   }
 
@@ -101,9 +122,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() {
@@ -132,9 +151,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isConfirmPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                        _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() {
@@ -179,4 +196,4 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       ),
     );
   }
-} 
+}
