@@ -19,6 +19,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text('Profile'),
+      ),
       body: Stack(
         children: [
           // Background Image with error handling
@@ -38,132 +44,97 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
           // Content
           SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                // App Bar - Fixed the FlexibleSpaceBar issue
-                SliverAppBar(
-                  backgroundColor: Colors.transparent,
-                  expandedHeight: 200,
-                  pinned: true,
-                  flexibleSpace: LayoutBuilder(
-                    builder: (BuildContext context, BoxConstraints constraints) {
-                      return FlexibleSpaceBar(
-                        title: AnimatedOpacity(
-                          duration: const Duration(milliseconds: 300),
-                          opacity: constraints.biggest.height <= kToolbarHeight * 1.5 ? 1.0 : 0.0,
-                          child: const Text('Profile'),
-                        ),
-                        background: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.black.withOpacity(0.7),
-                                Colors.transparent,
-                              ],
-                            ),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              'Profile',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                children: [
+                  // Profile Picture
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppTheme.primaryColor,
+                            width: 3,
                           ),
                         ),
+                        child: const CircleAvatar(
+                          radius: 55,
+                          backgroundColor: Colors.white24,
+                          child: Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: AppTheme.primaryColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.edit,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // User Info
+                  FutureBuilder<List<SavedUser>>(
+                    future: SharedPrefsService.getSavedUsers(),
+                    builder: (context, snapshot) {
+                      final user = snapshot.data?.firstOrNull;
+                      return Column(
+                        children: [
+                          Text(
+                            user?.name ?? 'Guest User',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            user?.email ?? 'Not logged in',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),
-                ),
+                  const SizedBox(height: 32),
 
-                // Profile Info
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      children: [
-                        // Profile Picture
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              width: 120,
-                              height: 120,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppTheme.primaryColor,
-                                  width: 3,
-                                ),
-                              ),
-                              child: const CircleAvatar(
-                                radius: 55,
-                                backgroundColor: Colors.white24,
-                                child: Icon(
-                                  Icons.person,
-                                  size: 50,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              right: 0,
-                              bottom: 0,
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: const BoxDecoration(
-                                  color: AppTheme.primaryColor,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.edit,
-                                  size: 20,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        const Text(
-                          'John Doe',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Text(
-                          'john.doe@example.com',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Stats
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _buildStatItem('Chats', '23'),
-                            _buildStatItem('Messages', '142'),
-                            _buildStatItem('Images', '15'),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Settings Section
-                        _buildSettingsSection(),
-                      ],
-                    ),
+                  // Stats
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildStatItem('Chats', '23'),
+                      _buildStatItem('Messages', '142'),
+                      _buildStatItem('Images', '15'),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 32),
+
+                  // Settings Section
+                  _buildSettingsSection(),
+                ],
+              ),
             ),
           ),
         ],
