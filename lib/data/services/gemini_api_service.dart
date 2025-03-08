@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class GeminiApiService {
   final Dio _dio = Dio();
   final String _baseUrl;
-  final String _model = 'gemini-1.0-pro';
+  final String _model = 'gemini-2.0-flash';
   final String? _apiKey;
   
   GeminiApiService() : 
@@ -40,7 +40,31 @@ class GeminiApiService {
       final data = {
         'contents': [{
           'parts': [{'text': prompt}]
-        }]
+        }],
+        'generationConfig': {
+          'temperature': 0.7,
+          'topK': 40,
+          'topP': 0.95,
+          'maxOutputTokens': 1024,
+        },
+        'safetySettings': [
+          {
+            'category': 'HARM_CATEGORY_HARASSMENT',
+            'threshold': 'BLOCK_MEDIUM_AND_ABOVE'
+          },
+          {
+            'category': 'HARM_CATEGORY_HATE_SPEECH',
+            'threshold': 'BLOCK_MEDIUM_AND_ABOVE'
+          },
+          {
+            'category': 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+            'threshold': 'BLOCK_MEDIUM_AND_ABOVE'
+          },
+          {
+            'category': 'HARM_CATEGORY_DANGEROUS_CONTENT',
+            'threshold': 'BLOCK_MEDIUM_AND_ABOVE'
+          }
+        ]
       };
 
       debugPrint('🔗 URL: $url');
