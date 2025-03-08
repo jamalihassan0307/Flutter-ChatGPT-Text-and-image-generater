@@ -7,6 +7,7 @@ import '../../../configs/constants/app_images.dart';
 import '../../../configs/theme/app_theme.dart';
 import '../../../configs/routes/routes_name.dart';
 import '../../services/shared_prefs_service.dart';
+import '../../providers/chat_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -18,6 +19,16 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
+    final chats = ref.watch(chatProvider); // Get chats from provider
+
+    // Calculate stats
+    final totalChats = chats.length;
+    final totalMessages = chats.fold<int>(
+      0,
+      (sum, chat) => sum + chat.messages.length,
+    );
+    final totalImages = 0; // TODO: Implement image tracking
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -124,9 +135,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildStatItem('Chats', '23'),
-                      _buildStatItem('Messages', '142'),
-                      _buildStatItem('Images', '15'),
+                      _buildStatItem('Chats', totalChats.toString()),
+                      _buildStatItem('Messages', totalMessages.toString()),
+                      _buildStatItem('Images', totalImages.toString()),
                     ],
                   ),
                   const SizedBox(height: 32),
@@ -219,13 +230,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     child: const Text('Cancel'),
                   ),
                   TextButton(
-                    onPressed: () {
-                      // TODO: Implement clear chat history
-                      Navigator.pop(context);
-                      Utils.flushBarSuccessMessage(
-                        'Chat history cleared',
-                        context,
-                      );
+                    onPressed: () async {
+                      // Clear all chats
+                      await ref.read(chatProvider.notifier).clearAllChats();
+                      if (mounted) {
+                        Navigator.pop(context);
+                        Utils.flushBarSuccessMessage(
+                          'Chat history cleared',
+                          context,
+                        );
+                      }
                     },
                     child: const Text('Clear'),
                   ),
@@ -249,12 +263,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     child: const Text('Cancel'),
                   ),
                   TextButton(
-                    onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        RoutesName.login,
-                        (route) => false,
-                      );
+                    onPressed: () async {
+                      // Clear saved user data
+                      final currentUser = await SharedPrefsService.getSavedUsers().then((users) => users.firstOrNull);
+                      if (currentUser != null) {
+                        await SharedPrefsService.removeSavedUser(currentUser.email);
+                      }
+                      // Clear chat history
+                      await ref.read(chatProvider.notifier).clearAllChats();
+                      if (mounted) {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          RoutesName.login,
+                          (route) => false,
+                        );
+                      }
                     },
                     child: const Text('Logout'),
                   ),
@@ -326,7 +349,8 @@ class _SavedUsersSheet extends StatelessWidget {
                   final user = snapshot.data![index];
                   return ListTile(
                     leading: const CircleAvatar(
-                      child: Icon(Icons.person),
+                      backgroundColor: AppTheme.primaryColor,
+                      child: Icon(Icons.person, color: Colors.white),
                     ),
                     title: Text(user.email),
                     subtitle: Text(user.name ?? ''),
@@ -334,7 +358,13 @@ class _SavedUsersSheet extends StatelessWidget {
                       icon: const Icon(Icons.delete),
                       onPressed: () async {
                         await SharedPrefsService.removeSavedUser(user.email);
-                        Navigator.pop(context);
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                          Utils.flushBarSuccessMessage(
+                            'User removed',
+                            context,
+                          );
+                        }
                       },
                     ),
                   );

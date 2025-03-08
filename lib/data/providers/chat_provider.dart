@@ -88,4 +88,9 @@ class ChatNotifier extends StateNotifier<List<Chat>> {
     // Save updated chats to storage
     await _storage.saveChats(state);
   }
+
+  Future<void> clearAllChats() async {
+    state = [];
+    await _storage.saveChats(state);
+  }
 }
