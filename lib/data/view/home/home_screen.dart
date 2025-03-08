@@ -13,6 +13,12 @@ class HomeScreen extends ConsumerWidget {
         title: const Text('Gemini AI'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.pushNamed(context, RoutesName.profile);
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
               Navigator.pushReplacementNamed(context, RoutesName.login);
