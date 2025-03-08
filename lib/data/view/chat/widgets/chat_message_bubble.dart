@@ -150,7 +150,7 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
                   ),
                 ),
                 duration: const Duration(milliseconds: 30),
-                onEnd: () {
+                onFinished: (String value) {
                   setState(() {
                     _showFullText = true;
                   });
