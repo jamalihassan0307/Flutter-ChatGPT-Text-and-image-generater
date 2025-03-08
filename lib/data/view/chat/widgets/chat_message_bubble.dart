@@ -34,6 +34,54 @@ class ChatMessageBubble extends StatelessWidget {
     );
   }
 
+  List<TextSpan> _processText(String text) {
+    final List<TextSpan> spans = [];
+    final paragraphs = text.split('\n\n');
+
+    for (final paragraph in paragraphs) {
+      if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
+        // Headers
+        spans.add(TextSpan(
+          text: '${paragraph.replaceAll('**', '')}\n',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ));
+      } else if (paragraph.startsWith('* ')) {
+        // Bullet points
+        spans.add(TextSpan(
+          text: '• ${paragraph.substring(2)}\n',
+          style: const TextStyle(
+            color: Color(0xFFD1D5DB),
+          ),
+        ));
+      } else if (paragraph.startsWith('```')) {
+        // Code blocks
+        final code = paragraph.replaceAll('```', '').trim();
+        spans.add(TextSpan(
+          text: '$code\n',
+          style: const TextStyle(
+            color: Color(0xFF85E89D),
+            fontFamily: 'monospace',
+            backgroundColor: Color(0xFF2D333B),
+          ),
+        ));
+      } else {
+        // Regular text
+        spans.add(TextSpan(
+          text: '$paragraph\n',
+          style: const TextStyle(
+            color: Color(0xFFD1D5DB),
+          ),
+        ));
+      }
+    }
+
+    return spans;
+  }
+
   Widget _buildMessageBubble(BuildContext context, String text, {required bool isUser}) {
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -57,42 +105,11 @@ class ChatMessageBubble extends StatelessWidget {
               )
             else
               RichTypewriter(
-                text: text,
-                cursor: const TypewriterCursor(color: Colors.green),
-                textStyle: const TextStyle(
-                  color: Color(0xFFD1D5DB),
-                  fontSize: 16,
-                ),
-                markdownConfig: MarkdownConfig(
-                  boldConfig: BoldConfig(
-                    textStyle: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  italicConfig: ItalicConfig(
-                    textStyle: const TextStyle(
-                      color: Color(0xFFD1D5DB),
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                  codeConfig: CodeConfig(
-                    textStyle: const TextStyle(
-                      color: Color(0xFF85E89D),
-                      fontFamily: 'monospace',
-                    ),
-                    backgroundColor: const Color(0xFF2D333B),
-                    borderRadius: BorderRadius.circular(4),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 2,
-                    ),
-                  ),
-                  bulletConfig: BulletConfig(
-                    bullet: '•',
-                    bulletColor: const Color(0xFF85E89D),
-                    indentation: 20,
-                  ),
+                symbolDelay: (symbol) =>
+                    switch (symbol) { TextSpan(text: ' ') => 50, TextSpan(text: '\n') => 200, _ => 20 },
+                onCompleted: () => debugPrint('Finished typing response'),
+                child: SelectableText.rich(
+                  TextSpan(children: _processText(text)),
                 ),
               ),
             if (!isUser) ...[
