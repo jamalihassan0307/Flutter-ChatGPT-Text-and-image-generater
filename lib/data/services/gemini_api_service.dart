@@ -31,47 +31,36 @@ class GeminiApiService {
     try {
       final text = response['candidates'][0]['content']['parts'][0]['text'] as String;
 
-      // Split into sections by double newlines
-      final sections = text.split('\n\n');
-      final formattedSections = <String>[];
+      // Format headings
+      var formattedText = text
+          .replaceAll(RegExp(r'^Definition:', multiLine: true), '# Definition:')
+          .replaceAll(RegExp(r'^Key Concepts:', multiLine: true), '# Key Concepts:')
+          .replaceAll(RegExp(r'^Types:', multiLine: true), '## Types:')
+          .replaceAll(RegExp(r'^Features:', multiLine: true), '## Features:')
+          .replaceAll(RegExp(r'^Example:', multiLine: true), '### Example:')
+          .replaceAll(RegExp(r'^Note:', multiLine: true), '### Note:');
 
-      for (var section in sections) {
-        // Format headings
-        if (section.startsWith('Key') || section.contains('Definition') || section.contains('Overview')) {
-          section = '# $section';
-        } else if (section.startsWith('Types') || section.startsWith('Features') || section.startsWith('Components')) {
-          section = '## $section';
-        } else if (section.startsWith('Example') || section.startsWith('Note')) {
-          section = '### $section';
+      // Format bullet points
+      formattedText =
+          formattedText.replaceAllMapped(RegExp(r'^[•-]\s(.+)$', multiLine: true), (match) => '* ${match[1]}');
+
+      // Format code blocks
+      formattedText = formattedText.replaceAllMapped(RegExp(r'```(\w+)?\n([\s\S]*?)\n```', multiLine: true),
+          (match) => '\n```${match[1] ?? ''}\n${match[2]}\n```\n');
+
+      // Format tables
+      formattedText = formattedText.replaceAllMapped(RegExp(r'\|.*\|'), (match) {
+        final row = match[0]!;
+        if (!row.contains('---')) {
+          return row;
         }
+        return row.replaceAll(RegExp(r'-+'), '---');
+      });
 
-        // Format lists
-        if (section.contains('\n-') || section.contains('\n•')) {
-          final lines = section.split('\n');
-          for (var i = 0; i < lines.length; i++) {
-            if (lines[i].startsWith('-') || lines[i].startsWith('•')) {
-              lines[i] = '* ${lines[i].substring(1).trim()}';
-            }
-          }
-          section = lines.join('\n');
-        }
-
-        // Format code blocks
-        if (section.contains('```')) {
-          section = section.replaceAll('```', '\n```\n');
-        }
-
-        // Format tables
-        if (section.contains('|')) {
-          final lines = section.split('\n');
-          if (lines.length > 1) {
-            lines.insert(1, '|${'-' * (lines[0].length - 2)}|');
-            section = lines.join('\n');
-          }
-        }
-
-        // Format bold terms
-        final terms = [
+      // Format bold text
+      formattedText = formattedText.replaceAllMapped(RegExp(r'\b(\w+)\b(?!\*\*)'), (match) {
+        final word = match[1]!;
+        final importantTerms = [
           'database',
           'data',
           'storage',
@@ -88,15 +77,15 @@ class GeminiApiService {
           'NoSQL',
           'schema'
         ];
-        for (final term in terms) {
-          final regex = RegExp(r'\b' + term + r'\b', caseSensitive: false);
-          section = section.replaceAllMapped(regex, (match) => '**${match[0]}**');
-        }
+        return importantTerms.contains(word.toLowerCase()) ? '**$word**' : word;
+      });
 
-        formattedSections.add(section);
-      }
+      // Format italic text for emphasis
+      formattedText = formattedText.replaceAllMapped(
+          RegExp(r'(?<![\*\w])(important|note|key|essential|crucial|significant)(?![\*\w])', caseSensitive: false),
+          (match) => '*${match[0]}*');
 
-      return formattedSections.join('\n\n');
+      return formattedText;
     } catch (e) {
       debugPrint('Error formatting response: $e');
       return response['candidates'][0]['content']['parts'][0]['text'] as String;
