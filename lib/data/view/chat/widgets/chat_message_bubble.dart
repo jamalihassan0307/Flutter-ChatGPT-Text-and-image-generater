@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:markdown_widget/markdown_widget.dart';
+import 'package:flutter/services.dart';
 import '../../../models/chat_message.dart';
+import '../../../configs/utils.dart';
 
 class ChatMessageBubble extends StatelessWidget {
   final ChatMessage message;
@@ -48,7 +49,7 @@ class ChatMessageBubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            MarkdownWidget(data: text),
+            SelectableText(text),
             if (!isUser) ...[
               const Divider(),
               Row(
@@ -57,7 +58,8 @@ class ChatMessageBubble extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.copy, size: 20),
                     onPressed: () {
-                      // TODO: Implement copy
+                      Clipboard.setData(ClipboardData(text: text));
+                      Utils.flushBarSuccessMessage('Copied to clipboard', context);
                     },
                   ),
                   IconButton(

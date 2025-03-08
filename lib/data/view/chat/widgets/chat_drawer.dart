@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/chat.dart';
+import '../../../providers/chat_provider.dart';
 
-class ChatDrawer extends StatelessWidget {
+class ChatDrawer extends ConsumerWidget {
   final List<Chat> chats;
   final String? selectedChatId;
   final Function(String) onChatSelected;
@@ -14,7 +16,7 @@ class ChatDrawer extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Drawer(
       child: Column(
         children: [
@@ -49,11 +51,46 @@ class ChatDrawer extends StatelessWidget {
                     itemBuilder: (context) => [
                       PopupMenuItem(
                         child: const Text('Rename'),
-                        onTap: () => _showRenameDialog(context, chat),
+                        onTap: () {
+                          final controller = TextEditingController(text: chat.name);
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Rename Chat'),
+                              content: TextField(
+                                controller: controller,
+                                decoration: const InputDecoration(
+                                  labelText: 'Chat Name',
+                                ),
+                                autofocus: true,
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    if (controller.text.isNotEmpty) {
+                                      ref.read(chatProvider.notifier).renameChat(
+                                            chat.id,
+                                            controller.text,
+                                          );
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                  child: const Text('Rename'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                       PopupMenuItem(
                         child: const Text('Delete'),
-                        onTap: () => _showDeleteDialog(context, chat),
+                        onTap: () {
+                          ref.read(chatProvider.notifier).deleteChat(chat.id);
+                        },
                       ),
                     ],
                   ),
@@ -61,62 +98,6 @@ class ChatDrawer extends StatelessWidget {
                 );
               },
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showRenameDialog(BuildContext context, Chat chat) {
-    final controller = TextEditingController(text: chat.name);
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Rename Chat'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Chat Name',
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (controller.text.isNotEmpty) {
-                // TODO: Implement rename
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Rename'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showDeleteDialog(BuildContext context, Chat chat) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Chat'),
-        content: Text('Are you sure you want to delete "${chat.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              // TODO: Implement delete
-              Navigator.pop(context);
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
           ),
         ],
       ),

@@ -4,6 +4,7 @@ import '../../data/view/auth/login_screen.dart';
 import '../../data/view/auth/signup_screen.dart';
 import '../../data/view/home/home_screen.dart';
 import '../../data/view/profile/profile_screen.dart';
+import '../../data/view/chat/chat_screen.dart';
 import 'routes_name.dart';
 
 class Routes {
@@ -28,6 +29,10 @@ class Routes {
       case RoutesName.profile:
         return MaterialPageRoute(
           builder: (BuildContext context) => const ProfileScreen(),
+        );
+      case RoutesName.chat:
+        return MaterialPageRoute(
+          builder: (BuildContext context) => const ChatScreen(),
         );
       default:
         return MaterialPageRoute(builder: (_) {
