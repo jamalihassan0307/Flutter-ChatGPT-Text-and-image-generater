@@ -1,10 +1,13 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class GeminiApiService {
-  final String _baseUrl = dotenv.env['GEMINI_BASE_URL'] ?? '';
-  final String _apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
+  // Move these to a secure config or environment service
+  static const String _baseUrl = String.fromEnvironment(
+    'GEMINI_BASE_URL',
+    defaultValue: 'https://generativelanguage.googleapis.com/v1beta',
+  );
+  static const String _apiKey = String.fromEnvironment('GEMINI_API_KEY');
 
   Future<Map<String, dynamic>> generateContent(String prompt) async {
     try {

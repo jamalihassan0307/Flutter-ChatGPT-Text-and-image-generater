@@ -70,6 +70,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - .env
     - assets/app_logo.png
     - assets/loading.gif
     - assets/openai-avatar.png
