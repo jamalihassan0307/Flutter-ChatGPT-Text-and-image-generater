@@ -30,12 +30,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+    # For markdown rendering
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  flutter_bloc:
-  equatable:
   http: ^1.1.0
   get_it:
   flutter_staggered_grid_view:
@@ -44,8 +43,14 @@ dependencies:
   shimmer:
   fluttertoast: ^8.2.4
   image_picker: ^1.0.4
-  shared_preferences: ^2.2.2
   flutter_dotenv: ^5.1.0
+  another_flushbar: ^1.12.30
+  provider: ^6.1.1
+  flutter_riverpod: ^2.5.1
+  shared_preferences: ^2.2.2
+  rich_typewriter: ^1.0.1
+  uuid: ^4.3.3 # For unique chat IDs
+  markdown_widget: ^2.3.2+3
 
 dev_dependencies:
   flutter_test:
