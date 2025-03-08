@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../configs/constants/app_images.dart';
 import '../../../configs/routes/routes_name.dart';
 import '../../../configs/theme/app_theme.dart';
+import '../../providers/theme_settings_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -57,6 +58,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
+    final themeSettings = ref.watch(themeSettingsProvider);
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -67,12 +70,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
             builder: (context, child) {
               return Opacity(
                 opacity: _fadeAnimation.value,
-                child: CachedNetworkImage(
-                  imageUrl: '${AppImages.aiBackground}?auto=format&fit=crop&w=800&q=80',
-                  fit: BoxFit.cover,
-                  color: Colors.black.withOpacity(0.7),
-                  colorBlendMode: BlendMode.darken,
-                ),
+                child: themeSettings.backgroundImage != null
+                    ? Image.asset(
+                        themeSettings.backgroundImage!,
+                        fit: BoxFit.cover,
+                        //   color: Colors.black.withOpacity(0.7),
+                        //   colorBlendMode: BlendMode.darken,
+                      )
+                    : CachedNetworkImage(
+                        imageUrl: '${AppImages.aiBackground}?auto=format&fit=crop&w=800&q=80',
+                        fit: BoxFit.cover,
+                        color: Colors.black.withOpacity(0.7),
+                        colorBlendMode: BlendMode.darken,
+                      ),
               );
             },
           ),
@@ -111,7 +121,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
                           Text(
                             'Gemini AI',
                             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                                  color: Colors.white,
+                                  color: themeSettings.textColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                           ),
@@ -119,7 +129,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
                           Text(
                             'Experience the future of AI',
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  color: Colors.white70,
+                                  color: themeSettings.textColorSecondary,
                                 ),
                           ),
                         ],
@@ -135,8 +145,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
                   builder: (context, child) {
                     return Opacity(
                       opacity: _fadeAnimation.value,
-                      child: const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(themeSettings.primaryColor),
                       ),
                     );
                   },
@@ -155,11 +165,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
               builder: (context, child) {
                 return Opacity(
                   opacity: _fadeAnimation.value,
-                  child: const Text(
+                  child: Text(
                     'Version 1.0.0',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: themeSettings.textColorSecondary,
                       fontSize: 12,
                     ),
                   ),

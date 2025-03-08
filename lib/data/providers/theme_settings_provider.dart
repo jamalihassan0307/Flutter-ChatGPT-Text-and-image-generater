@@ -24,6 +24,8 @@ class ThemeSettingsNotifier extends StateNotifier<ThemeSettings> {
     secondaryColor: Colors.teal,
     systemBubbleColor: Color(0xFF444654),
     userBubbleColor: Color(0xFF343541),
+    textColor: Colors.white,
+    textColorSecondary: Colors.white70,
   );
 
   Future<void> _initializeSettings() async {
@@ -61,12 +63,16 @@ class ThemeSettingsNotifier extends StateNotifier<ThemeSettings> {
     Color? secondaryColor,
     Color? systemBubbleColor,
     Color? userBubbleColor,
+    Color? textColor,
+    Color? textColorSecondary,
   }) async {
     final newSettings = state.copyWith(
       primaryColor: primaryColor,
       secondaryColor: secondaryColor,
       systemBubbleColor: systemBubbleColor,
       userBubbleColor: userBubbleColor,
+      textColor: textColor,
+      textColorSecondary: textColorSecondary,
     );
     await updateSettings(newSettings);
   }

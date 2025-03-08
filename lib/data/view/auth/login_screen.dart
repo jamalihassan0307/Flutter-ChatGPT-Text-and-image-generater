@@ -8,6 +8,7 @@ import '../../../configs/theme/app_theme.dart';
 import '../../../data/view/auth/widgets/saved_users_bottom_sheet.dart';
 import '../../../data/view/auth/widgets/save_user_bottom_sheet.dart';
 import '../../../data/services/shared_prefs_service.dart';
+import '../../providers/theme_settings_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -32,17 +33,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeSettings = ref.watch(themeSettingsProvider);
+
     return Scaffold(
       body: Stack(
         children: [
           // Background Image
           Positioned.fill(
-            child: CachedNetworkImage(
-              imageUrl: '${AppImages.aiBackground}?auto=format&fit=crop&w=800&q=80',
-              fit: BoxFit.cover,
-              color: Colors.black.withOpacity(0.7),
-              colorBlendMode: BlendMode.darken,
-            ),
+            child: themeSettings.backgroundImage != null
+                ? Image.asset(
+                    themeSettings.backgroundImage!,
+                    fit: BoxFit.cover,
+                    // color: Colors.black.withOpacity(0.7),
+                    // colorBlendMode: BlendMode.darken,
+                  )
+                : CachedNetworkImage(
+                    imageUrl: '${AppImages.aiBackground}?auto=format&fit=crop&w=800&q=80',
+                    fit: BoxFit.cover,
+                    color: Colors.black.withOpacity(0.7),
+                    colorBlendMode: BlendMode.darken,
+                  ),
           ),
           // Content
           SafeArea(
@@ -61,7 +71,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Text(
                       'Welcome Back',
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            color: Colors.white,
+                            color: themeSettings.textColor,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
@@ -69,7 +79,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Text(
                       'Login to continue your AI journey',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Colors.white70,
+                            color: themeSettings.textColorSecondary,
                           ),
                     ),
                     const SizedBox(height: 48),
@@ -85,21 +95,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             // Email Field
                             TextFormField(
                               controller: _emailController,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: themeSettings.textColor),
                               decoration: InputDecoration(
                                 labelText: 'Email',
-                                labelStyle: const TextStyle(color: Colors.white70),
-                                prefixIcon: const Icon(Icons.email, color: Colors.white70),
+                                labelStyle: TextStyle(color: themeSettings.textColorSecondary),
+                                prefixIcon: Icon(Icons.email, color: themeSettings.textColorSecondary),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Colors.white30),
+                                  borderSide: BorderSide(color: themeSettings.textColorSecondary.withOpacity(0.3)),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: AppTheme.primaryColor),
+                                  borderSide: BorderSide(color: themeSettings.primaryColor),
                                 ),
                               ),
                               keyboardType: TextInputType.emailAddress,
@@ -129,32 +139,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             // Password Field
                             TextFormField(
                               controller: _passwordController,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: themeSettings.textColor),
                               decoration: InputDecoration(
                                 labelText: 'Password',
-                                labelStyle: const TextStyle(color: Colors.white70),
-                                prefixIcon: const Icon(Icons.lock, color: Colors.white70),
+                                labelStyle: TextStyle(color: themeSettings.textColorSecondary),
+                                prefixIcon: Icon(Icons.lock, color: themeSettings.textColorSecondary),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Colors.white30),
+                                  borderSide: BorderSide(color: themeSettings.textColorSecondary.withOpacity(0.3)),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: AppTheme.primaryColor),
+                                  borderSide: BorderSide(color: themeSettings.primaryColor),
                                 ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                    color: Colors.white70,
+                                    color: themeSettings.textColorSecondary,
                                   ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _isPasswordVisible = !_isPasswordVisible;
-                                    });
-                                  },
+                                  onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                                 ),
                               ),
                               obscureText: !_isPasswordVisible,
@@ -174,26 +180,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ElevatedButton(
                               onPressed: _isLoading ? null : _handleLogin,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primaryColor,
+                                backgroundColor: themeSettings.primaryColor,
+                                foregroundColor: themeSettings.textColor,
                                 padding: const EdgeInsets.symmetric(vertical: 16),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
                               child: _isLoading
-                                  ? const SizedBox(
+                                  ? SizedBox(
                                       height: 20,
                                       width: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        valueColor: AlwaysStoppedAnimation<Color>(themeSettings.textColor),
                                       ),
                                     )
-                                  : const Text(
+                                  : Text(
                                       'Login',
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
+                                        color: themeSettings.textColor,
                                       ),
                                     ),
                             ),
@@ -204,9 +212,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               onPressed: () {
                                 Navigator.pushNamedAndRemoveUntil(context, RoutesName.signup, (route) => false);
                               },
-                              child: const Text(
+                              child: Text(
                                 "Don't have an account? Sign up",
-                                style: TextStyle(color: Colors.white70),
+                                style: TextStyle(color: themeSettings.textColorSecondary),
                               ),
                             ),
                           ],

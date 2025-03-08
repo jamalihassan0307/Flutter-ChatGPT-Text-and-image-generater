@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chatgpt_text_and_image_processing/configs/utils.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/data/models/theme_settings.dart';
 import 'package:typewritertext/typewritertext.dart';
 import '../../../models/chat_message.dart';
 
@@ -9,6 +10,7 @@ class ChatMessageBubble extends StatefulWidget {
   final VoidCallback onShare;
   final VoidCallback? onDelete;
   final bool isNewMessage;
+  final ThemeSettings themeSettings;
 
   const ChatMessageBubble({
     super.key,
@@ -16,6 +18,7 @@ class ChatMessageBubble extends StatefulWidget {
     required this.onShare,
     this.onDelete,
     this.isNewMessage = false,
+    required this.themeSettings,
   });
 
   @override
@@ -62,8 +65,8 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
         // H1 Headers
         spans.add(TextSpan(
           text: paragraph.substring(2),
-          style: const TextStyle(
-            color: Color(0xFF10A37F), // ChatGPT green for headers
+          style: TextStyle(
+            color: widget.themeSettings.primaryColor,
             fontSize: 24,
             fontWeight: FontWeight.bold,
             height: 2.0,
@@ -73,8 +76,8 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
         // H2 Headers
         spans.add(TextSpan(
           text: paragraph.substring(3),
-          style: const TextStyle(
-            color: Color(0xFF10A37F),
+          style: TextStyle(
+            color: widget.themeSettings.primaryColor,
             fontSize: 20,
             fontWeight: FontWeight.bold,
             height: 1.8,
@@ -206,7 +209,9 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
           margin: const EdgeInsets.symmetric(vertical: 4),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: isUser ? Theme.of(context).primaryColor : const Color(0xFF444654),
+            color: isUser
+                ? widget.themeSettings.userBubbleColor.withOpacity(0.9)
+                : widget.themeSettings.systemBubbleColor.withOpacity(0.9),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -215,13 +220,13 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
               if (isUser)
                 SelectableText(
                   text,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: widget.themeSettings.textColor),
                 )
               else if (_showFullText)
                 SelectableText.rich(
                   TextSpan(children: _processText(text)),
-                  style: const TextStyle(
-                    color: Color(0xFFD1D5DB),
+                  style: TextStyle(
+                    color: widget.themeSettings.textColor,
                     fontSize: 16,
                   ),
                 )
@@ -233,8 +238,8 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
                     repeat: false,
                     text: Text(
                       text,
-                      style: const TextStyle(
-                        color: Color(0xFFD1D5DB),
+                      style: TextStyle(
+                        color: widget.themeSettings.textColor,
                         fontSize: 16,
                       ),
                     ),
@@ -245,23 +250,23 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
                   ),
                 ),
               if (!isUser) ...[
-                const Divider(color: Color(0xFF4D4D4D)),
+                Divider(color: widget.themeSettings.textColorSecondary.withOpacity(0.3)),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.copy, size: 20, color: Color(0xFFD1D5DB)),
+                      icon: Icon(Icons.copy, size: 20, color: widget.themeSettings.textColorSecondary),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: text));
                         Utils.flushBarSuccessMessage('Copied to clipboard', context);
                       },
                     ),
                     IconButton(
-                      icon: const Icon(Icons.share, size: 20, color: Color(0xFFD1D5DB)),
+                      icon: Icon(Icons.share, size: 20, color: widget.themeSettings.textColorSecondary),
                       onPressed: widget.onShare,
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete, size: 20, color: Color(0xFFD1D5DB)),
+                      icon: Icon(Icons.delete, size: 20, color: widget.themeSettings.textColorSecondary),
                       onPressed: () => widget.onDelete?.call(),
                     ),
                   ],

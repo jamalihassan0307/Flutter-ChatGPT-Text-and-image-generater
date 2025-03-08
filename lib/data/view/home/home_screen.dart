@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/data/models/theme_settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../configs/constants/app_images.dart';
 import '../../../configs/routes/routes_name.dart';
 import '../../../configs/theme/app_theme.dart';
 import '../../providers/chat_provider.dart';
+import '../../providers/theme_settings_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -12,19 +14,27 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(chatProvider);
-    final recentChats = chats.take(5).toList(); // Show only 5 recent chats
+    final recentChats = chats.take(5).toList();
+    final themeSettings = ref.watch(themeSettingsProvider);
 
     return Scaffold(
       body: Stack(
         children: [
           // Background Image
           Positioned.fill(
-            child: CachedNetworkImage(
-              imageUrl: '${AppImages.aiBackground}?auto=format&fit=crop&w=800&q=80',
-              fit: BoxFit.cover,
-              color: Colors.black.withOpacity(0.7),
-              colorBlendMode: BlendMode.darken,
-            ),
+            child: themeSettings.backgroundImage != null
+                ? Image.asset(
+                    themeSettings.backgroundImage!,
+                    fit: BoxFit.cover,
+                    // color: Colors.black.withOpacity(0.7),
+                    // colorBlendMode: BlendMode.darken,
+                  )
+                : CachedNetworkImage(
+                    imageUrl: '${AppImages.aiBackground}?auto=format&fit=crop&w=800&q=80',
+                    fit: BoxFit.cover,
+                    // color: Colors.black.withOpacity(0.7),
+                    // colorBlendMode: BlendMode.darken,
+                  ),
           ),
           // Content
           SafeArea(
@@ -34,7 +44,7 @@ class HomeScreen extends ConsumerWidget {
                 SliverAppBar(
                   automaticallyImplyLeading: false,
                   floating: true,
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: themeSettings.systemBubbleColor.withOpacity(0.8),
                   title: Row(
                     children: [
                       Image.asset(
@@ -42,12 +52,15 @@ class HomeScreen extends ConsumerWidget {
                         height: 40,
                       ),
                       const SizedBox(width: 12),
-                      const Text('Gemini AI'),
+                      Text(
+                        'Gemini AI',
+                        style: TextStyle(color: themeSettings.textColor),
+                      ),
                     ],
                   ),
                   actions: [
                     IconButton(
-                      icon: const Icon(Icons.person),
+                      icon: Icon(Icons.person, color: themeSettings.textColor),
                       onPressed: () => Navigator.pushNamed(context, RoutesName.profile),
                     ),
                   ],
@@ -63,7 +76,7 @@ class HomeScreen extends ConsumerWidget {
                         Text(
                           'Welcome to\nGemini AI',
                           style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                                color: Colors.white,
+                                color: themeSettings.textColor,
                                 fontWeight: FontWeight.bold,
                                 height: 1.2,
                               ),
@@ -72,7 +85,7 @@ class HomeScreen extends ConsumerWidget {
                         Text(
                           'Experience the power of AI with natural conversations',
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Colors.white70,
+                                color: themeSettings.textColorSecondary,
                               ),
                         ),
                       ],
@@ -90,7 +103,7 @@ class HomeScreen extends ConsumerWidget {
                         Text(
                           'Quick Actions',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                color: Colors.white,
+                                color: themeSettings.textColor,
                                 fontWeight: FontWeight.bold,
                               ),
                         ),
@@ -102,6 +115,7 @@ class HomeScreen extends ConsumerWidget {
                                 icon: Icons.chat_bubble_outline,
                                 title: 'New Chat',
                                 onTap: () => Navigator.pushNamed(context, RoutesName.chat),
+                                themeSettings: themeSettings,
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -112,6 +126,7 @@ class HomeScreen extends ConsumerWidget {
                                 onTap: () {
                                   // TODO: Implement image generation
                                 },
+                                themeSettings: themeSettings,
                               ),
                             ),
                           ],
@@ -132,13 +147,16 @@ class HomeScreen extends ConsumerWidget {
                           Text(
                             'Recent Chats',
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  color: Colors.white,
+                                  color: themeSettings.textColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                           ),
                           TextButton(
                             onPressed: () => Navigator.pushNamed(context, RoutesName.chat),
-                            child: const Text('View All'),
+                            child: Text(
+                              'View All',
+                              style: TextStyle(color: themeSettings.primaryColor),
+                            ),
                           ),
                         ],
                       ),
@@ -151,21 +169,21 @@ class HomeScreen extends ConsumerWidget {
                         (context, index) {
                           final chat = recentChats[index];
                           return Card(
-                            color: Colors.white.withOpacity(0.1),
+                            color: themeSettings.systemBubbleColor.withOpacity(0.8),
                             child: ListTile(
-                              leading: const CircleAvatar(
-                                backgroundColor: AppTheme.primaryColor,
-                                child: Icon(Icons.chat, color: Colors.white),
+                              leading: CircleAvatar(
+                                backgroundColor: themeSettings.primaryColor,
+                                child: Icon(Icons.chat, color: themeSettings.textColor),
                               ),
                               title: Text(
                                 chat.name,
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(color: themeSettings.textColor),
                               ),
                               subtitle: Text(
                                 '${chat.messages.length} messages',
-                                style: const TextStyle(color: Colors.white70),
+                                style: TextStyle(color: themeSettings.textColorSecondary),
                               ),
-                              trailing: const Icon(Icons.arrow_forward, color: Colors.white70),
+                              trailing: Icon(Icons.arrow_forward, color: themeSettings.textColorSecondary),
                               onTap: () => Navigator.pushNamed(
                                 context,
                                 RoutesName.chat,
@@ -194,17 +212,19 @@ class _ActionCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final VoidCallback onTap;
+  final ThemeSettings themeSettings;
 
   const _ActionCard({
     required this.icon,
     required this.title,
     required this.onTap,
+    required this.themeSettings,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white.withOpacity(0.1),
+      color: themeSettings.userBubbleColor.withOpacity(0.8),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -215,13 +235,13 @@ class _ActionCard extends StatelessWidget {
               Icon(
                 icon,
                 size: 32,
-                color: Colors.white,
+                color: themeSettings.textColor,
               ),
               const SizedBox(height: 12),
               Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: themeSettings.textColor,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),

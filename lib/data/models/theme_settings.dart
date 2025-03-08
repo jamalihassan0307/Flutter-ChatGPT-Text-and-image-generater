@@ -6,6 +6,8 @@ class ThemeSettings {
   final Color secondaryColor;
   final Color systemBubbleColor;
   final Color userBubbleColor;
+  final Color textColor;
+  final Color textColorSecondary;
 
   const ThemeSettings({
     required this.backgroundImage,
@@ -13,6 +15,8 @@ class ThemeSettings {
     required this.secondaryColor,
     required this.systemBubbleColor,
     required this.userBubbleColor,
+    required this.textColor,
+    required this.textColorSecondary,
   });
 
   ThemeSettings copyWith({
@@ -21,6 +25,8 @@ class ThemeSettings {
     Color? secondaryColor,
     Color? systemBubbleColor,
     Color? userBubbleColor,
+    Color? textColor,
+    Color? textColorSecondary,
   }) {
     return ThemeSettings(
       backgroundImage: backgroundImage ?? this.backgroundImage,
@@ -28,6 +34,8 @@ class ThemeSettings {
       secondaryColor: secondaryColor ?? this.secondaryColor,
       systemBubbleColor: systemBubbleColor ?? this.systemBubbleColor,
       userBubbleColor: userBubbleColor ?? this.userBubbleColor,
+      textColor: textColor ?? this.textColor,
+      textColorSecondary: textColorSecondary ?? this.textColorSecondary,
     );
   }
 
@@ -38,6 +46,8 @@ class ThemeSettings {
       secondaryColor: Color(json['secondaryColor'] as int),
       systemBubbleColor: Color(json['systemBubbleColor'] as int),
       userBubbleColor: Color(json['userBubbleColor'] as int),
+      textColor: Color(json['textColor'] as int),
+      textColorSecondary: Color(json['textColorSecondary'] as int),
     );
   }
 
@@ -47,5 +57,7 @@ class ThemeSettings {
         'secondaryColor': secondaryColor.value,
         'systemBubbleColor': systemBubbleColor.value,
         'userBubbleColor': userBubbleColor.value,
+        'textColor': textColor.value,
+        'textColorSecondary': textColorSecondary.value,
       };
 }

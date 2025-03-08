@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/configs/constants/app_images.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/chat.dart';
-import '../../../providers/chat_provider.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/data/models/chat.dart';
+// import 'package:flutter_chatgpt_text_and_image_processing/data/providers/chat_provider.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/data/providers/theme_settings_provider.dart';
+// import 'package:flutter_chatgpt_text_and_image_processing/data/utils/app_images.dart';
 
 class ChatDrawer extends ConsumerWidget {
   final List<Chat> chats;
@@ -17,21 +20,33 @@ class ChatDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final themeSettings = ref.watch(themeSettingsProvider);
+
     return Drawer(
+      backgroundColor: themeSettings.systemBubbleColor,
       child: Column(
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
+              color: themeSettings.systemBubbleColor,
             ),
-            child: const Center(
-              child: Text(
-                'Conversations',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  AppImages.appLogo,
+                  height: 60,
                 ),
-              ),
+                const SizedBox(height: 16),
+                Text(
+                  'Gemini AI',
+                  style: TextStyle(
+                    color: themeSettings.textColor,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -39,60 +54,26 @@ class ChatDrawer extends ConsumerWidget {
               itemCount: chats.length,
               itemBuilder: (context, index) {
                 final chat = chats[index];
+                final isSelected = chat.id == selectedChatId;
+
                 return ListTile(
+                  selected: isSelected,
+                  selectedTileColor: themeSettings.primaryColor.withOpacity(0.2),
+                  leading: Icon(
+                    Icons.chat_bubble_outline,
+                    color: isSelected ? themeSettings.primaryColor : themeSettings.textColorSecondary,
+                  ),
                   title: Text(
                     chat.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: isSelected ? themeSettings.primaryColor : themeSettings.textColor,
+                    ),
                   ),
-                  selected: chat.id == selectedChatId,
-                  leading: const Icon(Icons.chat_bubble_outline),
-                  trailing: PopupMenuButton(
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        child: const Text('Rename'),
-                        onTap: () {
-                          final controller = TextEditingController(text: chat.name);
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Rename Chat'),
-                              content: TextField(
-                                controller: controller,
-                                decoration: const InputDecoration(
-                                  labelText: 'Chat Name',
-                                ),
-                                autofocus: true,
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    if (controller.text.isNotEmpty) {
-                                      ref.read(chatProvider.notifier).renameChat(
-                                            chat.id,
-                                            controller.text,
-                                          );
-                                      Navigator.pop(context);
-                                    }
-                                  },
-                                  child: const Text('Rename'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                      PopupMenuItem(
-                        child: const Text('Delete'),
-                        onTap: () {
-                          ref.read(chatProvider.notifier).deleteChat(chat.id);
-                        },
-                      ),
-                    ],
+                  subtitle: Text(
+                    '${chat.messages.length} messages',
+                    style: TextStyle(
+                      color: themeSettings.textColorSecondary,
+                    ),
                   ),
                   onTap: () => onChatSelected(chat.id),
                 );
@@ -103,4 +84,4 @@ class ChatDrawer extends ConsumerWidget {
       ),
     );
   }
-} 
+}

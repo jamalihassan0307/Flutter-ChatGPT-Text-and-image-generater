@@ -3,7 +3,7 @@ import 'package:flutter_chatgpt_text_and_image_processing/data/models/saved_user
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../configs/utils.dart';
-import '../../../configs/constants/app_images.dart';
+// import '../../../configs/constants/app_images.dart';
 import '../../../configs/theme/app_theme.dart';
 import '../../../configs/routes/routes_name.dart';
 import '../../services/shared_prefs_service.dart';
@@ -37,7 +37,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Profile'),
+        title: Text(
+          'Profile',
+          style: TextStyle(color: themeSettings.textColor),
+        ),
       ),
       body: Stack(
         children: [
@@ -49,10 +52,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       image: DecorationImage(
                         image: AssetImage(themeSettings.backgroundImage),
                         fit: BoxFit.cover,
-                        colorFilter: ColorFilter.mode(
-                          Colors.black.withOpacity(0.7),
-                          BlendMode.darken,
-                        ),
+                        // colorFilter: ColorFilter.mode(
+                        //   Colors.black.withOpacity(0.7),
+                        //   BlendMode.darken,
+                        // ),
                       ),
                     ),
                   )
@@ -128,16 +131,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         children: [
                           Text(
                             user?.name ?? 'Guest User',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: themeSettings.textColor,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
                             user?.email ?? 'Not logged in',
-                            style: const TextStyle(
-                              color: Colors.white70,
+                            style: TextStyle(
+                              color: themeSettings.textColorSecondary,
                               fontSize: 16,
                             ),
                           ),
@@ -181,8 +184,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         children: [
           Text(
             value,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: themeSettings.textColor,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
@@ -190,8 +193,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
-              color: Colors.white70,
+            style: TextStyle(
+              color: themeSettings.textColorSecondary,
               fontSize: 14,
             ),
           ),
@@ -201,13 +204,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _buildSettingsSection() {
+    final themeSettings = ref.watch(themeSettingsProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Settings',
           style: TextStyle(
-            color: Colors.white,
+            color: themeSettings.textColor,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -237,7 +241,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                title: const Text('Clear Chat History'),
+                title: Text('Clear Chat History', style: TextStyle(color: themeSettings.textColor)),
                 content: const Text(
                   'Are you sure you want to clear all chat history? This action cannot be undone.',
                 ),
@@ -325,12 +329,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final themeSettings = ref.watch(themeSettingsProvider);
     return ListTile(
       tileColor: themeSettings.systemBubbleColor.withOpacity(0.1),
-      leading: Icon(icon, color: themeSettings.primaryColor),
+      leading: Icon(icon, color: themeSettings.textColor),
       title: Text(
         title,
-        style: TextStyle(color: themeSettings.primaryColor),
+        style: TextStyle(color: themeSettings.textColor),
       ),
-      trailing: Icon(Icons.chevron_right, color: themeSettings.primaryColor),
+      trailing: Icon(Icons.chevron_right, color: themeSettings.textColor),
       onTap: onTap,
     );
   }
@@ -339,70 +343,81 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 class _SavedUsersSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Saved Users',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+    return Consumer(
+      builder: (context, ref, child) {
+        final themeSettings = ref.watch(themeSettingsProvider);
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(20),
             ),
           ),
-          const SizedBox(height: 16),
-          FutureBuilder<List<SavedUser>>(
-            future: SharedPrefsService.getSavedUsers(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: Text('No saved users found'),
-                  ),
-                );
-              }
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Saved Users',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: themeSettings.textColor,
+                ),
+              ),
+              const SizedBox(height: 16),
+              FutureBuilder<List<SavedUser>>(
+                future: SharedPrefsService.getSavedUsers(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32.0),
+                        child: Text(
+                          'No saved users found',
+                          style: TextStyle(
+                            color: themeSettings.textColor,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
 
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final user = snapshot.data![index];
-                  return ListTile(
-                    leading: const CircleAvatar(
-                      backgroundColor: AppTheme.primaryColor,
-                      child: Icon(Icons.person, color: Colors.white),
-                    ),
-                    title: Text(user.email),
-                    subtitle: Text(user.name ?? ''),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () async {
-                        await SharedPrefsService.removeSavedUser(user.email);
-                        if (context.mounted) {
-                          Navigator.pop(context);
-                          Utils.flushBarSuccessMessage(
-                            'User removed',
-                            context,
-                          );
-                        }
-                      },
-                    ),
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final user = snapshot.data![index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: themeSettings.primaryColor,
+                          child: Icon(Icons.person, color: themeSettings.textColor),
+                        ),
+                        title: Text(user.email, style: TextStyle(color: themeSettings.textColor)),
+                        subtitle: Text(user.name ?? '', style: TextStyle(color: themeSettings.textColor)),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () async {
+                            await SharedPrefsService.removeSavedUser(user.email);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                              Utils.flushBarSuccessMessage(
+                                'User removed',
+                                context,
+                              );
+                            }
+                          },
+                        ),
+                      );
+                    },
                   );
                 },
-              );
-            },
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

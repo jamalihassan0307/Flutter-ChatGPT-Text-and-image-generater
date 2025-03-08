@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/data/models/theme_settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:markdown_widget/markdown_widget.dart';
 import '../../../configs/utils.dart';
 import '../../providers/chat_provider.dart';
+import '../../providers/theme_settings_provider.dart';
 import 'widgets/chat_drawer.dart';
 import 'widgets/chat_input.dart';
 import 'widgets/chat_message_bubble.dart';
@@ -104,6 +106,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final chats = ref.watch(chatProvider);
+    final themeSettings = ref.watch(themeSettingsProvider);
     final currentChat = chats.isEmpty
         ? null
         : chats.firstWhere(
@@ -113,10 +116,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(currentChat?.name ?? 'New Chat'),
+        title: Text(
+          currentChat?.name ?? 'New Chat',
+          style: TextStyle(color: themeSettings.textColor),
+        ),
+        backgroundColor: themeSettings.systemBubbleColor,
+        iconTheme: IconThemeData(color: themeSettings.textColor),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: Icon(Icons.add, color: themeSettings.textColor),
             onPressed: _handleNewChat,
           ),
         ],
@@ -133,20 +141,27 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         children: [
           Expanded(
             child: currentChat == null
-                ? _buildWelcomeScreen()
+                ? _buildWelcomeScreen(themeSettings)
                 : Stack(
                     children: [
                       // Background Image
                       Positioned.fill(
-                        child: CachedNetworkImage(
-                          imageUrl: '${AppImages.chatBg}?auto=format&fit=crop&w=800&q=80',
-                          fit: BoxFit.cover,
-                          color: Colors.black.withOpacity(0.7),
-                          colorBlendMode: BlendMode.darken,
-                          placeholder: (context, url) => Container(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                          ),
-                        ),
+                        child: themeSettings.backgroundImage != null
+                            ? Image.asset(
+                                themeSettings.backgroundImage!,
+                                fit: BoxFit.cover,
+                                color: Colors.black.withOpacity(0.7),
+                                colorBlendMode: BlendMode.darken,
+                              )
+                            : CachedNetworkImage(
+                                imageUrl: '${AppImages.chatBg}?auto=format&fit=crop&w=800&q=80',
+                                fit: BoxFit.cover,
+                                color: Colors.black.withOpacity(0.7),
+                                colorBlendMode: BlendMode.darken,
+                                placeholder: (context, url) => Container(
+                                  color: Theme.of(context).scaffoldBackgroundColor,
+                                ),
+                              ),
                       ),
                       // Chat Messages
                       ListView.builder(
@@ -158,7 +173,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             return Container(
                               height: MediaQuery.of(context).size.height * 0.7,
                               alignment: Alignment.center,
-                              child: const LoadingWidget(),
+                              child: LoadingWidget(ref: ref),
                             );
                           }
                           final message = currentChat.messages[index];
@@ -172,6 +187,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                   );
                             },
                             isNewMessage: index == currentChat.messages.length - 1 && _isLoading,
+                            themeSettings: themeSettings,
                           );
                         },
                       ),
@@ -181,6 +197,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           bottom: 80,
                           child: FloatingActionButton(
                             mini: true,
+                            backgroundColor: themeSettings.primaryColor,
+                            foregroundColor: themeSettings.textColor,
                             onPressed: _scrollToBottom,
                             child: const Icon(Icons.arrow_downward),
                           ),
@@ -191,6 +209,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ChatInput(
             controller: _textController,
             isLoading: _isLoading,
+            themeSettings: themeSettings,
             onSend: () {
               if (_textController.text.isNotEmpty) {
                 if (currentChat == null) {
@@ -210,17 +229,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  Widget _buildWelcomeScreen() {
+  Widget _buildWelcomeScreen(ThemeSettings themeSettings) {
     return Stack(
       children: [
         // Background Image
         Positioned.fill(
-          child: CachedNetworkImage(
-            imageUrl: '${AppImages.aiBackground}?auto=format&fit=crop&w=800&q=80',
-            fit: BoxFit.cover,
-            color: Colors.black.withOpacity(0.6),
-            colorBlendMode: BlendMode.darken,
-          ),
+          child: themeSettings.backgroundImage != null
+              ? Image.asset(
+                  themeSettings.backgroundImage!,
+                  fit: BoxFit.cover,
+                  color: Colors.black.withOpacity(0.6),
+                  colorBlendMode: BlendMode.darken,
+                )
+              : CachedNetworkImage(
+                  imageUrl: '${AppImages.aiBackground}?auto=format&fit=crop&w=800&q=80',
+                  fit: BoxFit.cover,
+                  color: Colors.black.withOpacity(0.6),
+                  colorBlendMode: BlendMode.darken,
+                ),
         ),
         // Content
         Center(
@@ -235,7 +261,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               Text(
                 'Welcome to Gemini AI',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.white,
+                      color: themeSettings.textColor,
                       fontWeight: FontWeight.bold,
                     ),
               ),
@@ -243,23 +269,27 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               Text(
                 'Start a conversation with AI',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.white70,
+                      color: themeSettings.textColorSecondary,
                     ),
               ),
               const SizedBox(height: 32),
               ElevatedButton.icon(
                 onPressed: _handleNewChat,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
+                  backgroundColor: themeSettings.primaryColor,
+                  foregroundColor: themeSettings.textColor,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 16,
                   ),
                 ),
                 icon: const Icon(Icons.add),
-                label: const Text(
+                label: Text(
                   'Start a new chat',
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: themeSettings.textColor,
+                  ),
                 ),
               ),
             ],
