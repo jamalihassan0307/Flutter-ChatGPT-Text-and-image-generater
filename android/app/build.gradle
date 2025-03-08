@@ -27,7 +27,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     namespace "com.example.flutter_chatgpt_text_and_image_processing"
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion 35
     ndkVersion "25.1.8937393"
 
     compileOptions {
@@ -35,10 +35,17 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
+    kotlinOptions {
+        jvmTarget = '17'
+        freeCompilerArgs += [
+            "-Xskip-metadata-version-check"
+        ]
+    }
+
     defaultConfig {
         applicationId "com.example.flutter_chatgpt_text_and_image_processing"
         minSdkVersion 21
-        targetSdkVersion rootProject.ext.compileSdkVersion
+        targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -47,7 +54,18 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
         }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        disable 'InvalidPackage'
     }
 
     sourceSets {
@@ -59,13 +77,8 @@ flutter {
     source '../..'
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-}
-
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.multidex:multidex:2.0.1'
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }
