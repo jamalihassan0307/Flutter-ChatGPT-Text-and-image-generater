@@ -14,7 +14,7 @@ void main() async {
   } catch (e) {
     debugPrint('Error loading .env file: $e');
     // Set default values or handle the error appropriately
-    dotenv.env['GEMINI_API_KEY'] = 'your_default_key_here';
+    dotenv.env['GEMINI_API_KEY'] = 'AIzaSyDG93475838urtuhrg35';
     dotenv.env['GEMINI_BASE_URL'] = 'https://generativelanguage.googleapis.com/v1beta';
   }
 

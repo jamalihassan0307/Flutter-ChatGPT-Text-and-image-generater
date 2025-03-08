@@ -13,6 +13,15 @@ class GeminiApiService {
     _apiKey = dotenv.env['GEMINI_API_KEY'] {
     _dio.options.headers['Content-Type'] = 'application/json';
     
+    // Add logging interceptor
+    _dio.interceptors.add(LogInterceptor(
+      requestBody: true,
+      responseBody: true,
+      logPrint: (obj) {
+        debugPrint('🌐 API Log: $obj');
+      },
+    ));
+    
     if (_apiKey == null) {
       debugPrint('Warning: GEMINI_API_KEY not found in environment variables');
     }
@@ -24,17 +33,31 @@ class GeminiApiService {
     }
 
     try {
-      final response = await _dio.post(
-        '$_baseUrl/models/$_model:generateContent?key=$_apiKey',
-        data: {
-          'contents': [{
-            'parts': [{'text': prompt}]
-          }]
-        },
-      );
+      debugPrint('🚀 Sending request to Gemini API...');
+      debugPrint('📝 Prompt: $prompt');
+      
+      final url = '$_baseUrl/models/$_model:generateContent?key=$_apiKey';
+      final data = {
+        'contents': [{
+          'parts': [{'text': prompt}]
+        }]
+      };
+
+      debugPrint('🔗 URL: $url');
+      debugPrint('📦 Request Data: $data');
+
+      final response = await _dio.post(url, data: data);
+      
+      debugPrint('✅ Response received:');
+      debugPrint('📄 Response Data: ${response.data}');
+
       return response.data;
     } catch (e) {
+      debugPrint('❌ API Error: $e');
       if (e is DioException) {
+        debugPrint('🔍 Response Status: ${e.response?.statusCode}');
+        debugPrint('📄 Response Data: ${e.response?.data}');
+        
         if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
           throw Exception('Invalid API key. Please check your GEMINI_API_KEY in .env file');
         }
