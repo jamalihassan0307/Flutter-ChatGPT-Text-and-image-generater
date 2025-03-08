@@ -21,39 +21,62 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image
+          // Background Image with error handling
           Positioned.fill(
             child: CachedNetworkImage(
               imageUrl: '${AppImages.profileBg}?auto=format&fit=crop&w=800&q=80',
               fit: BoxFit.cover,
               color: Colors.black.withOpacity(0.7),
               colorBlendMode: BlendMode.darken,
+              errorWidget: (context, url, error) => Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+              ),
+              placeholder: (context, url) => Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+              ),
             ),
           ),
           // Content
           SafeArea(
             child: CustomScrollView(
               slivers: [
-                // App Bar
+                // App Bar - Fixed the FlexibleSpaceBar issue
                 SliverAppBar(
                   backgroundColor: Colors.transparent,
                   expandedHeight: 200,
                   pinned: true,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.black.withOpacity(0.7),
-                            Colors.transparent,
-                          ],
+                  flexibleSpace: LayoutBuilder(
+                    builder: (BuildContext context, BoxConstraints constraints) {
+                      return FlexibleSpaceBar(
+                        title: AnimatedOpacity(
+                          duration: const Duration(milliseconds: 300),
+                          opacity: constraints.biggest.height <= kToolbarHeight * 1.5 ? 1.0 : 0.0,
+                          child: const Text('Profile'),
                         ),
-                      ),
-                    ),
-                    title: const Text('Profile'),
-                    centerTitle: true,
+                        background: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black.withOpacity(0.7),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Profile',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
 
