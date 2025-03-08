@@ -36,6 +36,51 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
+  void _handleNewChat() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('New Chat'),
+        content: TextField(
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Enter chat name',
+            border: OutlineInputBorder(),
+          ),
+          onSubmitted: (value) {
+            if (value.isNotEmpty) {
+              ref.read(chatProvider.notifier).createChat(value).then((_) {
+                final chats = ref.read(chatProvider);
+                if (chats.isNotEmpty) {
+                  setState(() => _selectedChatId = chats.last.id);
+                }
+                Navigator.pop(context);
+              });
+            }
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(chatProvider.notifier).createChat('New Chat').then((_) {
+                final chats = ref.read(chatProvider);
+                if (chats.isNotEmpty) {
+                  setState(() => _selectedChatId = chats.last.id);
+                }
+                Navigator.pop(context);
+              });
+            },
+            child: const Text('Create'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final chats = ref.watch(chatProvider);
@@ -49,6 +94,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(currentChat?.name ?? 'New Chat'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: _handleNewChat,
+          ),
+        ],
       ),
       drawer: ChatDrawer(
         chats: chats,
@@ -62,8 +113,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         children: [
           Expanded(
             child: currentChat == null
-                ? const Center(
-                    child: Text('Start a new chat'),
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('No chats yet'),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: _handleNewChat,
+                          child: const Text('Start a new chat'),
+                        ),
+                      ],
+                    ),
                   )
                 : ListView.builder(
                     controller: _scrollController,
@@ -83,10 +144,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             onSend: () {
               if (_textController.text.isNotEmpty) {
                 if (currentChat == null) {
-                  ref
-                      .read(chatProvider.notifier)
-                      .createChat('New Chat')
-                      .then((_) {
+                  ref.read(chatProvider.notifier).createChat('New Chat').then((_) {
                     final newChat = ref.read(chatProvider).last;
                     setState(() => _selectedChatId = newChat.id);
                     _sendMessage(newChat.id);
@@ -111,4 +169,4 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       Utils.flushBarErrorMessage(error.toString(), context);
     });
   }
-} 
+}
