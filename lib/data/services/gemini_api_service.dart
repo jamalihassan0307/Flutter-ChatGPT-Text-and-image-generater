@@ -27,6 +27,82 @@ class GeminiApiService {
     }
   }
 
+  String _formatResponse(Map<String, dynamic> response) {
+    try {
+      final text = response['candidates'][0]['content']['parts'][0]['text'] as String;
+
+      // Split into sections by double newlines
+      final sections = text.split('\n\n');
+      final formattedSections = <String>[];
+
+      for (var section in sections) {
+        // Format headings
+        if (section.startsWith('Key') || section.contains('Definition') || section.contains('Overview')) {
+          section = '# $section';
+        } else if (section.startsWith('Types') || section.startsWith('Features') || section.startsWith('Components')) {
+          section = '## $section';
+        } else if (section.startsWith('Example') || section.startsWith('Note')) {
+          section = '### $section';
+        }
+
+        // Format lists
+        if (section.contains('\n-') || section.contains('\n•')) {
+          final lines = section.split('\n');
+          for (var i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith('-') || lines[i].startsWith('•')) {
+              lines[i] = '* ${lines[i].substring(1).trim()}';
+            }
+          }
+          section = lines.join('\n');
+        }
+
+        // Format code blocks
+        if (section.contains('```')) {
+          section = section.replaceAll('```', '\n```\n');
+        }
+
+        // Format tables
+        if (section.contains('|')) {
+          final lines = section.split('\n');
+          if (lines.length > 1) {
+            lines.insert(1, '|${'-' * (lines[0].length - 2)}|');
+            section = lines.join('\n');
+          }
+        }
+
+        // Format bold terms
+        final terms = [
+          'database',
+          'data',
+          'storage',
+          'information',
+          'system',
+          'query',
+          'table',
+          'record',
+          'field',
+          'key',
+          'index',
+          'transaction',
+          'SQL',
+          'NoSQL',
+          'schema'
+        ];
+        for (final term in terms) {
+          final regex = RegExp(r'\b' + term + r'\b', caseSensitive: false);
+          section = section.replaceAllMapped(regex, (match) => '**${match[0]}**');
+        }
+
+        formattedSections.add(section);
+      }
+
+      return formattedSections.join('\n\n');
+    } catch (e) {
+      debugPrint('Error formatting response: $e');
+      return response['candidates'][0]['content']['parts'][0]['text'] as String;
+    }
+  }
+
   Future<Map<String, dynamic>> generateContent(String prompt) async {
     if (_apiKey == null) {
       throw Exception('API key not configured. Please add GEMINI_API_KEY to your .env file');
@@ -64,8 +140,14 @@ class GeminiApiService {
 
       final response = await _dio.post(url, data: data);
 
+      // Format the response text
+      final formattedResponse = _formatResponse(response.data);
+
+      // Update the response with formatted text
+      response.data['candidates'][0]['content']['parts'][0]['text'] = formattedResponse;
+
       debugPrint('✅ Response received:');
-      debugPrint('📄 Response Data: ${response.data}');
+      debugPrint('📄 Formatted Response: $formattedResponse');
 
       return response.data;
     } catch (e) {
