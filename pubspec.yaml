@@ -78,6 +78,7 @@ flutter:
   assets:
     - assets/app_logo.png
     - assets/loading.gif
+    - assets/themeImages
     - assets/openai-avatar.png
     - .env
 
