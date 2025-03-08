@@ -1,3 +1,4 @@
+import 'package:flutter_chatgpt_text_and_image_processing/data/providers/app_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/chat.dart';
 import '../models/chat_message.dart';
