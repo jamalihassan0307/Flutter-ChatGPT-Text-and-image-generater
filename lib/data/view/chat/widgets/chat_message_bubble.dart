@@ -7,12 +7,14 @@ import '../../../models/chat_message.dart';
 class ChatMessageBubble extends StatefulWidget {
   final ChatMessage message;
   final VoidCallback onShare;
+  final VoidCallback? onDelete;
   final bool isNewMessage;
 
   const ChatMessageBubble({
     super.key,
     required this.message,
     required this.onShare,
+    this.onDelete,
     this.isNewMessage = false,
   });
 
@@ -195,78 +197,78 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
   Widget _buildMessageBubble(BuildContext context, String text, {required bool isUser}) {
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isUser ? Theme.of(context).primaryColor : const Color(0xFF444654),
-          borderRadius: BorderRadius.circular(12),
-        ),
+      child: ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.8,
+          minWidth: 100,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (isUser)
-              SelectableText(
-                text,
-                style: const TextStyle(color: Colors.white),
-              )
-            else if (_showFullText)
-              SelectableText.rich(
-                TextSpan(children: _processText(text)),
-                style: const TextStyle(
-                  color: Color(0xFFD1D5DB),
-                  fontSize: 16,
-                ),
-              )
-            else
-              TypeWriterText(
-                maintainSize: true,
-                repeat: false,
-                text: Text(
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isUser ? Theme.of(context).primaryColor : const Color(0xFF444654),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (isUser)
+                SelectableText(
                   text,
+                  style: const TextStyle(color: Colors.white),
+                )
+              else if (_showFullText)
+                SelectableText.rich(
+                  TextSpan(children: _processText(text)),
                   style: const TextStyle(
                     color: Color(0xFFD1D5DB),
                     fontSize: 16,
                   ),
-                ),
-                duration: const Duration(milliseconds: 1),
-                onFinished: (String value) {
-                  setState(() {
-                    _showFullText = true;
-                  });
-                },
-              ),
-            if (!isUser) ...[
-              const Divider(color: Color(0xFF4D4D4D)),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.copy,
-                      size: 20,
-                      color: Color(0xFFD1D5DB),
+                )
+              else
+                SizedBox(
+                  width: double.infinity,
+                  child: TypeWriterText(
+                    maintainSize: true,
+                    repeat: false,
+                    text: Text(
+                      text,
+                      style: const TextStyle(
+                        color: Color(0xFFD1D5DB),
+                        fontSize: 16,
+                      ),
                     ),
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: text));
-                      Utils.flushBarSuccessMessage('Copied to clipboard', context);
+                    duration: const Duration(milliseconds: 1),
+                    onFinished: (String value) {
+                      setState(() => _showFullText = true);
                     },
                   ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.share,
-                      size: 20,
-                      color: Color(0xFFD1D5DB),
+                ),
+              if (!isUser) ...[
+                const Divider(color: Color(0xFF4D4D4D)),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.copy, size: 20, color: Color(0xFFD1D5DB)),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: text));
+                        Utils.flushBarSuccessMessage('Copied to clipboard', context);
+                      },
                     ),
-                    onPressed: widget.onShare,
-                  ),
-                ],
-              ),
+                    IconButton(
+                      icon: const Icon(Icons.share, size: 20, color: Color(0xFFD1D5DB)),
+                      onPressed: widget.onShare,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, size: 20, color: Color(0xFFD1D5DB)),
+                      onPressed: () => widget.onDelete?.call(),
+                    ),
+                  ],
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

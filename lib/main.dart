@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'configs/routes/routes.dart';
 import 'configs/routes/routes_name.dart';
+import 'configs/theme/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/providers/app_providers.dart';
+import 'data/providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,27 +30,18 @@ void main() async {
   ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = ref.watch(themeProvider);
+
     return MaterialApp(
       title: 'Gemini AI',
-      theme: ThemeData.dark().copyWith(
-        primaryColor: const Color(0xFF10A37F), // ChatGPT green
-        scaffoldBackgroundColor: const Color(0xFF343541), // Dark background
-        cardColor: const Color(0xFF444654), // Message bubble background
-        dividerColor: const Color(0xFF4D4D4D),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Color(0xFFD1D5DB)),
-          bodyMedium: TextStyle(color: Color(0xFFD1D5DB)),
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF343541),
-          elevation: 0,
-        ),
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       debugShowCheckedModeBanner: false,
       initialRoute: RoutesName.splash,
       onGenerateRoute: Routes.generateRoute,

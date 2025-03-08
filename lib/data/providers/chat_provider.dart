@@ -4,6 +4,7 @@ import '../models/chat.dart';
 import '../models/chat_message.dart';
 import '../services/chat_storage_service.dart';
 import '../services/gemini_api_service.dart';
+import 'package:uuid/uuid.dart';
 
 final chatProvider = StateNotifierProvider<ChatNotifier, List<Chat>>((ref) {
   final storage = ref.watch(chatStorageProvider);
@@ -49,16 +50,19 @@ class ChatNotifier extends StateNotifier<List<Chat>> {
       final response = await _api.generateContent(message);
       final aiResponse = response['candidates'][0]['content']['parts'][0]['text'];
 
+      final newMessage = ChatMessage(
+        id: const Uuid().v4(),
+        query: message,
+        response: aiResponse,
+        timestamp: DateTime.now(),
+      );
+
       state = state.map((chat) {
         if (chat.id == chatId) {
           return chat.copyWith(
             messages: [
               ...chat.messages,
-              ChatMessage(
-                query: message,
-                response: aiResponse,
-                timestamp: DateTime.now(),
-              ),
+              newMessage,
             ],
           );
         }
@@ -70,4 +74,18 @@ class ChatNotifier extends StateNotifier<List<Chat>> {
       throw Exception('Failed to send message: $e');
     }
   }
-} 
+
+  Future<void> deleteMessage(String chatId, String messageId) async {
+    state = state.map((chat) {
+      if (chat.id == chatId) {
+        return chat.copyWith(
+          messages: chat.messages.where((m) => m.id != messageId).toList(),
+        );
+      }
+      return chat;
+    }).toList();
+
+    // Save updated chats to storage
+    await _storage.saveChats(state);
+  }
+}
