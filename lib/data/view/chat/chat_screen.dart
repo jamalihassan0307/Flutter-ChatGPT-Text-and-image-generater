@@ -6,6 +6,7 @@ import '../../providers/chat_provider.dart';
 import 'widgets/chat_drawer.dart';
 import 'widgets/chat_input.dart';
 import 'widgets/chat_message_bubble.dart';
+import '../../../configs/components/loading_widget.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -18,6 +19,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _scrollController = ScrollController();
   final _textController = TextEditingController();
   String? _selectedChatId;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -129,8 +131,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 : ListView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.all(16),
-                    itemCount: currentChat.messages.length,
+                    itemCount: currentChat.messages.length + (_isLoading ? 1 : 0),
                     itemBuilder: (context, index) {
+                      if (index == currentChat.messages.length) {
+                        return const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: LoadingWidget(),
+                        );
+                      }
                       final message = currentChat.messages[index];
                       return ChatMessageBubble(
                         message: message,
@@ -163,10 +171,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _sendMessage(String chatId) {
     final message = _textController.text;
     _textController.clear();
+    setState(() => _isLoading = true);
+
     ref.read(chatProvider.notifier).sendMessage(chatId, message).then((_) {
       _scrollToBottom();
     }).catchError((error) {
       Utils.flushBarErrorMessage(error.toString(), context);
+    }).whenComplete(() {
+      setState(() => _isLoading = false);
     });
   }
 }

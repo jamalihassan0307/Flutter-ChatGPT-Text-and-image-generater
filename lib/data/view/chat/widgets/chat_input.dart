@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class ChatInput extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
+  final bool isLoading;
 
   const ChatInput({
     super.key,
     required this.controller,
     required this.onSend,
+    this.isLoading = false,
   });
 
   @override
@@ -27,6 +29,7 @@ class ChatInput extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: controller,
+              enabled: !isLoading,
               decoration: const InputDecoration(
                 hintText: 'Type a message...',
                 border: InputBorder.none,
@@ -39,7 +42,7 @@ class ChatInput extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.send),
-            onPressed: onSend,
+            onPressed: isLoading ? null : onSend,
           ),
         ],
       ),

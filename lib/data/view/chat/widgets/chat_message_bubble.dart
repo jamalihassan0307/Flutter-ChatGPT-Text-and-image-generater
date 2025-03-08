@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_chatgpt_text_and_image_processing/configs/utils.dart';
 import '../../../models/chat_message.dart';
-import '../../../configs/utils.dart';
 
 class ChatMessageBubble extends StatelessWidget {
   final ChatMessage message;
