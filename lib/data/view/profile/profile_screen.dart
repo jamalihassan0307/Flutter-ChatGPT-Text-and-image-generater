@@ -8,6 +8,7 @@ import '../../../configs/theme/app_theme.dart';
 import '../../../configs/routes/routes_name.dart';
 import '../../services/shared_prefs_service.dart';
 import '../../providers/chat_provider.dart';
+import '../../../data/view/settings/theme_settings_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -245,6 +246,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                 ],
               ),
+            );
+          },
+        ),
+        _buildSettingsTile(
+          icon: Icons.color_lens,
+          title: 'Theme Settings',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ThemeSettingsScreen()),
             );
           },
         ),

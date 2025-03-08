@@ -52,6 +52,7 @@ dependencies:
   uuid: ^4.3.3 # For unique chat IDs
   markdown_widget: ^2.3.2+3
   typewritertext: ^3.0.9
+  flutter_colorpicker: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -78,7 +79,7 @@ flutter:
   assets:
     - assets/app_logo.png
     - assets/loading.gif
-    - assets/themeImages
+    - assets/themeImages/
     - assets/openai-avatar.png
     - .env
 
