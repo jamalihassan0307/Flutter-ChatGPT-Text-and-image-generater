@@ -28,14 +28,10 @@ class AppTheme {
     ),
     switchTheme: SwitchThemeData(
       thumbColor: MaterialStateProperty.resolveWith((states) {
-        return states.contains(MaterialState.selected) 
-          ? primaryColor 
-          : Colors.grey;
+        return states.contains(MaterialState.selected) ? primaryColor : Colors.grey;
       }),
       trackColor: MaterialStateProperty.resolveWith((states) {
-        return states.contains(MaterialState.selected) 
-          ? primaryColor.withOpacity(0.5) 
-          : Colors.grey.withOpacity(0.5);
+        return states.contains(MaterialState.selected) ? primaryColor.withOpacity(0.5) : Colors.grey.withOpacity(0.5);
       }),
     ),
   );
@@ -60,18 +56,14 @@ class AppTheme {
     ),
     switchTheme: SwitchThemeData(
       thumbColor: MaterialStateProperty.resolveWith((states) {
-        return states.contains(MaterialState.selected) 
-          ? primaryColor 
-          : Colors.grey;
+        return states.contains(MaterialState.selected) ? primaryColor : Colors.grey;
       }),
       trackColor: MaterialStateProperty.resolveWith((states) {
-        return states.contains(MaterialState.selected) 
-          ? primaryColor.withOpacity(0.5) 
-          : Colors.grey.withOpacity(0.5);
+        return states.contains(MaterialState.selected) ? primaryColor.withOpacity(0.5) : Colors.grey.withOpacity(0.5);
       }),
     ),
     iconTheme: const IconThemeData(
       color: textColor,
     ),
   );
-} 
+}

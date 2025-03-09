@@ -20,12 +20,12 @@ class ThemeSettingsNotifier extends StateNotifier<ThemeSettings> {
 
   static const _defaultSettings = ThemeSettings(
     backgroundImage: 'assets/themeImages/aiBackground.jpeg',
-    primaryColor: AppTheme.primaryColor,
-    secondaryColor: Colors.teal,
-    systemBubbleColor: Color(0xFF444654),
-    userBubbleColor: Color(0xFF343541),
-    textColor: Colors.white,
-    textColorSecondary: Colors.white70,
+    primaryColor: Colors.blue,
+    secondaryColor: Colors.lightBlue,
+    systemBubbleColor: Colors.blueGrey,
+    userBubbleColor: Color.fromARGB(255, 16, 76, 167),
+    textColor: Colors.black,
+    textColorSecondary: Colors.black87,
   );
 
   Future<void> _initializeSettings() async {
