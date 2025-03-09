@@ -37,6 +37,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        iconTheme: IconThemeData(color: themeSettings.textColor),
         title: Text(
           'Profile',
           style: TextStyle(color: themeSettings.textColor),

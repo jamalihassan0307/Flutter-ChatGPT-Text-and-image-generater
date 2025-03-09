@@ -40,19 +40,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         children: [
           // Background Image
           Positioned.fill(
-            child: themeSettings.backgroundImage != null
-                ? Image.asset(
-                    themeSettings.backgroundImage!,
-                    fit: BoxFit.cover,
-                    // color: Colors.black.withOpacity(0.7),
-                    // colorBlendMode: BlendMode.darken,
-                  )
-                : CachedNetworkImage(
-                    imageUrl: '${AppImages.aiBackground}?auto=format&fit=crop&w=800&q=80',
-                    fit: BoxFit.cover,
-                    color: Colors.black.withOpacity(0.7),
-                    colorBlendMode: BlendMode.darken,
-                  ),
+            child: Image.asset(
+              themeSettings.backgroundImage,
+              fit: BoxFit.cover,
+              // color: Colors.black.withOpacity(0.7),
+              // colorBlendMode: BlendMode.darken,
+            ),
           ),
           // Content
           SafeArea(

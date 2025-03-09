@@ -56,147 +56,6 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
     );
   }
 
-  List<TextSpan> _processText(String text) {
-    final List<TextSpan> spans = [];
-    final paragraphs = text.split('\n\n');
-
-    for (final paragraph in paragraphs) {
-      if (paragraph.startsWith('#')) {
-        // H1 Headers
-        spans.add(TextSpan(
-          text: paragraph.substring(2),
-          style: TextStyle(
-            color: widget.themeSettings.primaryColor,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            height: 2.0,
-          ),
-        ));
-      } else if (paragraph.startsWith('##')) {
-        // H2 Headers
-        spans.add(TextSpan(
-          text: paragraph.substring(3),
-          style: TextStyle(
-            color: widget.themeSettings.primaryColor,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            height: 1.8,
-          ),
-        ));
-      } else if (paragraph.startsWith('###')) {
-        // H3 Headers
-        spans.add(TextSpan(
-          text: paragraph.substring(4),
-          style: const TextStyle(
-            color: Color(0xFF10A37F),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            height: 1.6,
-          ),
-        ));
-      } else if (paragraph.startsWith('*') || paragraph.startsWith('-')) {
-        // Bullet points
-        spans.add(TextSpan(
-          text: '• ${paragraph.substring(1)}',
-          style: const TextStyle(
-            color: Color(0xFFD1D5DB),
-            height: 1.5,
-            fontSize: 16,
-          ),
-        ));
-      } else if (paragraph.startsWith('```')) {
-        // Code blocks
-        final code = paragraph.replaceAll('```', '').trim();
-        spans.add(TextSpan(
-          children: [
-            const TextSpan(text: '\n'),
-            TextSpan(
-              text: code,
-              style: const TextStyle(
-                color: Color(0xFF85E89D),
-                fontFamily: 'monospace',
-                fontSize: 14,
-                backgroundColor: Color(0xFF2D333B),
-                height: 1.5,
-                letterSpacing: 0.5,
-              ),
-            ),
-            const TextSpan(text: '\n'),
-          ],
-        ));
-      } else if (paragraph.contains('|')) {
-        // Tables
-        final rows = paragraph.split('\n');
-        for (var i = 0; i < rows.length; i++) {
-          final row = rows[i];
-          spans.add(TextSpan(
-            text: row,
-            style: TextStyle(
-              color: i == 0 ? Colors.white : const Color(0xFFD1D5DB), // Header row in white
-              fontFamily: 'monospace',
-              fontSize: 14,
-              height: 1.5,
-              fontWeight: i == 0 ? FontWeight.bold : FontWeight.normal,
-            ),
-          ));
-          if (i < rows.length - 1) {
-            spans.add(const TextSpan(text: '\n'));
-          }
-        }
-      } else {
-        // Regular text with bold and italic formatting
-        String processedText = paragraph;
-        List<TextSpan> inlineSpans = [];
-
-        // Split text by bold and italic markers
-        final segments = processedText.split(RegExp(r'(\*\*.*?\*\*|\*.*?\*)'));
-
-        for (var segment in segments) {
-          if (segment.startsWith('**') && segment.endsWith('**')) {
-            // Bold text
-            inlineSpans.add(TextSpan(
-              text: segment.substring(2, segment.length - 2),
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ));
-          } else if (segment.startsWith('*') && segment.endsWith('*')) {
-            // Italic text
-            inlineSpans.add(TextSpan(
-              text: segment.substring(1, segment.length - 1),
-              style: const TextStyle(
-                color: Color(0xFFD1D5DB),
-                fontStyle: FontStyle.italic,
-              ),
-            ));
-          } else {
-            // Regular text
-            inlineSpans.add(TextSpan(
-              text: segment,
-              style: const TextStyle(
-                color: Color(0xFFD1D5DB),
-              ),
-            ));
-          }
-        }
-
-        spans.add(TextSpan(
-          children: inlineSpans,
-          style: const TextStyle(
-            height: 1.5,
-            fontSize: 16,
-          ),
-        ));
-      }
-
-      // Add newline after each paragraph
-      spans.add(const TextSpan(text: '\n\n'));
-    }
-
-    return spans;
-  }
-
   Widget _buildMessageBubble(BuildContext context, String text, {required bool isUser}) {
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -224,11 +83,12 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
                 )
               else if (_showFullText)
                 SelectableText.rich(
-                  TextSpan(children: _processText(text)),
+                  TextSpan(children: _processText(text, context)),
                   style: TextStyle(
                     color: widget.themeSettings.textColor,
                     fontSize: 16,
                   ),
+                  textAlign: TextAlign.left,
                 )
               else
                 SizedBox(
@@ -255,18 +115,18 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.copy, size: 20, color: widget.themeSettings.textColorSecondary),
+                      icon: Icon(Icons.copy, size: 20, color: widget.themeSettings.textColor),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: text));
                         Utils.flushBarSuccessMessage('Copied to clipboard', context);
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.share, size: 20, color: widget.themeSettings.textColorSecondary),
+                      icon: Icon(Icons.share, size: 20, color: widget.themeSettings.textColor),
                       onPressed: widget.onShare,
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete, size: 20, color: widget.themeSettings.textColorSecondary),
+                      icon: Icon(Icons.delete, size: 20, color: widget.themeSettings.textColor),
                       onPressed: () => widget.onDelete?.call(),
                     ),
                   ],
@@ -277,5 +137,153 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble> {
         ),
       ),
     );
+  }
+
+  List<InlineSpan> _processText(String text, BuildContext context) {
+    final List<InlineSpan> spans = [];
+    final paragraphs = text.split('\n\n');
+
+    for (final paragraph in paragraphs) {
+      if (paragraph.startsWith('```')) {
+        // Code blocks handling
+        final match = RegExp(r'```(\w*)\n([\s\S]*?)```').firstMatch(paragraph);
+        if (match != null) {
+          final language = match.group(1) ?? 'plaintext';
+          final code = _escapeHtml(match.group(2) ?? '');
+
+          spans.add(TextSpan(
+            children: [
+              const TextSpan(text: '\n'),
+              WidgetSpan(
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2D333B),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFF444C56)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: Color(0xFF444C56)),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              language,
+                              style: const TextStyle(
+                                color: Color(0xFF8B949E),
+                                fontSize: 12,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.copy, size: 16, color: Color(0xFF8B949E)),
+                              onPressed: () {
+                                Clipboard.setData(ClipboardData(text: code));
+                                Utils.flushBarSuccessMessage('Code copied to clipboard', context);
+                              },
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: SelectableText(
+                          code,
+                          style: const TextStyle(
+                            color: Color(0xFF85E89D),
+                            fontFamily: 'monospace',
+                            fontSize: 14,
+                            height: 1.5,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const TextSpan(text: '\n'),
+            ],
+          ));
+        }
+      } else {
+        // Process regular text with formatting
+        List<TextSpan> inlineSpans = [];
+        String currentText = paragraph;
+
+        // Process bold text first
+        final boldMatches = RegExp(r'\*\*(.*?)\*\*').allMatches(currentText).toList();
+        int lastEnd = 0;
+
+        if (boldMatches.isNotEmpty) {
+          for (var match in boldMatches) {
+            // Add text before the bold part
+            if (match.start > lastEnd) {
+              inlineSpans.add(TextSpan(
+                text: currentText.substring(lastEnd, match.start),
+                style: const TextStyle(color: Color(0xFFD1D5DB)),
+              ));
+            }
+
+            // Add the bold text
+            inlineSpans.add(TextSpan(
+              text: match.group(1),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ));
+
+            lastEnd = match.end;
+          }
+
+          // Add remaining text
+          if (lastEnd < currentText.length) {
+            inlineSpans.add(TextSpan(
+              text: currentText.substring(lastEnd),
+              style: const TextStyle(color: Color(0xFFD1D5DB)),
+            ));
+          }
+        } else {
+          // If no bold text, process as regular text
+          inlineSpans.add(TextSpan(
+            text: currentText,
+            style: const TextStyle(color: Color(0xFFD1D5DB)),
+          ));
+        }
+
+        spans.add(TextSpan(
+          children: inlineSpans,
+          style: const TextStyle(
+            height: 1.5,
+            fontSize: 16,
+          ),
+        ));
+      }
+
+      spans.add(const TextSpan(text: '\n\n'));
+    }
+
+    return spans;
+  }
+
+  String _escapeHtml(String text) {
+    return text
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;')
+        .trim();
   }
 }

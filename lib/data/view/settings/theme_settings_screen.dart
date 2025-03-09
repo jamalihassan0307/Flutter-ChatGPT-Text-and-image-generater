@@ -15,13 +15,22 @@ class ThemeSettingsScreen extends ConsumerStatefulWidget {
 class _ThemeSettingsScreenState extends ConsumerState<ThemeSettingsScreen> {
   final List<ThemePreset> presets = [
     ThemePreset(
+      name: 'Light Mode',
+      primaryColor: Colors.white,
+      secondaryColor: Colors.grey[200]!,
+      systemBubbleColor: Colors.grey[200]!,
+      userBubbleColor: Colors.grey[200]!,
+      textColor: Colors.black,
+      textColorSecondary: Colors.black87,
+    ),
+    ThemePreset(
       name: 'Classic Green',
       primaryColor: const Color(0xFF10A37F),
       secondaryColor: Colors.teal,
       systemBubbleColor: const Color(0xFF444654),
       userBubbleColor: const Color(0xFF343541),
-      textColor: Colors.white,
-      textColorSecondary: Colors.white70,
+      textColor: Colors.black,
+      textColorSecondary: Colors.black87,
     ),
     ThemePreset(
       name: 'Ocean Blue',
@@ -29,8 +38,8 @@ class _ThemeSettingsScreenState extends ConsumerState<ThemeSettingsScreen> {
       secondaryColor: Colors.lightBlue,
       systemBubbleColor: Colors.blueGrey,
       userBubbleColor: Colors.blue[900]!,
-      textColor: Colors.white,
-      textColorSecondary: Colors.white70,
+      textColor: Colors.black,
+      textColorSecondary: Colors.black87,
     ),
     ThemePreset(
       name: 'Royal Purple',
@@ -110,8 +119,8 @@ class _ThemeSettingsScreenState extends ConsumerState<ThemeSettingsScreen> {
       secondaryColor: Colors.deepPurpleAccent,
       systemBubbleColor: Colors.purple[700]!,
       userBubbleColor: Colors.purple[800]!,
-      textColor: Colors.white,
-      textColorSecondary: Colors.white70,
+      textColor: Colors.black,
+      textColorSecondary: Colors.black87,
     ),
     ThemePreset(
       name: 'Steel Grey',
@@ -143,6 +152,13 @@ class _ThemeSettingsScreenState extends ConsumerState<ThemeSettingsScreen> {
   ];
 
   final List<String> backgroundImages = [
+    'assets/themeImages/c1.png',
+    'assets/themeImages/c2.jpg',
+    'assets/themeImages/c3.jpg',
+    'assets/themeImages/c4.jpg',
+    'assets/themeImages/c5.jpg',
+    'assets/themeImages/c6.png',
+    'assets/themeImages/c7.png',
     'assets/themeImages/aiBackground.jpeg',
     'assets/themeImages/chatBg.jpeg',
     'assets/themeImages/profileBg.jpeg',
@@ -183,12 +199,10 @@ class _ThemeSettingsScreenState extends ConsumerState<ThemeSettingsScreen> {
       ),
       body: Container(
         decoration: BoxDecoration(
-          image: settings.backgroundImage != null
-              ? DecorationImage(
-                  image: AssetImage(settings.backgroundImage!),
-                  fit: BoxFit.cover,
-                )
-              : null,
+          image: DecorationImage(
+            image: AssetImage(settings.backgroundImage),
+            fit: BoxFit.cover,
+          ),
         ),
         child: ListView(
           padding: const EdgeInsets.all(16),
@@ -314,9 +328,14 @@ class _ThemeSettingsScreenState extends ConsumerState<ThemeSettingsScreen> {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 120,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
+          height: 240,
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              childAspectRatio: 1.5,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
             itemCount: backgroundImages.length,
             itemBuilder: (context, index) {
               final image = backgroundImages[index];
@@ -332,7 +351,7 @@ class _ThemeSettingsScreenState extends ConsumerState<ThemeSettingsScreen> {
                       Container(
                         width: 120,
                         decoration: BoxDecoration(
-                          border: isSelected ? Border.all(color: settings.primaryColor, width: 3) : null,
+                          border: isSelected ? Border.all(color: settings.textColor, width: 3) : null,
                           borderRadius: BorderRadius.circular(8),
                           image: DecorationImage(
                             image: AssetImage(image),
@@ -347,6 +366,7 @@ class _ThemeSettingsScreenState extends ConsumerState<ThemeSettingsScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
+                              border: Border.all(color: settings.textColor, width: 2),
                               color: settings.primaryColor,
                               shape: BoxShape.circle,
                             ),

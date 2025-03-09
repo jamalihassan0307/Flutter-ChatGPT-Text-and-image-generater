@@ -11,7 +11,6 @@ import 'widgets/chat_input.dart';
 import 'widgets/chat_message_bubble.dart';
 import '../../../configs/components/loading_widget.dart';
 import '../../../configs/constants/app_images.dart';
-import '../../../configs/theme/app_theme.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -146,22 +145,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     children: [
                       // Background Image
                       Positioned.fill(
-                        child: themeSettings.backgroundImage != null
-                            ? Image.asset(
-                                themeSettings.backgroundImage!,
-                                fit: BoxFit.cover,
-                                color: Colors.black.withOpacity(0.7),
-                                colorBlendMode: BlendMode.darken,
-                              )
-                            : CachedNetworkImage(
-                                imageUrl: '${AppImages.chatBg}?auto=format&fit=crop&w=800&q=80',
-                                fit: BoxFit.cover,
-                                color: Colors.black.withOpacity(0.7),
-                                colorBlendMode: BlendMode.darken,
-                                placeholder: (context, url) => Container(
-                                  color: Theme.of(context).scaffoldBackgroundColor,
-                                ),
-                              ),
+                        child: Image.asset(
+                          themeSettings.backgroundImage,
+                          fit: BoxFit.cover,
+                          color: Colors.black.withOpacity(0.1),
+                          colorBlendMode: BlendMode.darken,
+                        ),
                       ),
                       // Chat Messages
                       ListView.builder(
@@ -234,19 +223,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       children: [
         // Background Image
         Positioned.fill(
-          child: themeSettings.backgroundImage != null
-              ? Image.asset(
-                  themeSettings.backgroundImage!,
-                  fit: BoxFit.cover,
-                  color: Colors.black.withOpacity(0.6),
-                  colorBlendMode: BlendMode.darken,
-                )
-              : CachedNetworkImage(
-                  imageUrl: '${AppImages.aiBackground}?auto=format&fit=crop&w=800&q=80',
-                  fit: BoxFit.cover,
-                  color: Colors.black.withOpacity(0.6),
-                  colorBlendMode: BlendMode.darken,
-                ),
+          child: Image.asset(
+            themeSettings.backgroundImage,
+            fit: BoxFit.cover,
+            color: Colors.black.withOpacity(0.6),
+            colorBlendMode: BlendMode.darken,
+          ),
         ),
         // Content
         Center(

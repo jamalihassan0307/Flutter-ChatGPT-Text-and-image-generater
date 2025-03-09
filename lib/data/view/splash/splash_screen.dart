@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../../configs/constants/app_images.dart';
 import '../../../configs/routes/routes_name.dart';
-import '../../../configs/theme/app_theme.dart';
 import '../../providers/theme_settings_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -69,21 +67,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
             animation: _fadeAnimation,
             builder: (context, child) {
               return Opacity(
-                opacity: _fadeAnimation.value,
-                child: themeSettings.backgroundImage != null
-                    ? Image.asset(
-                        themeSettings.backgroundImage!,
-                        fit: BoxFit.cover,
-                        //   color: Colors.black.withOpacity(0.7),
-                        //   colorBlendMode: BlendMode.darken,
-                      )
-                    : CachedNetworkImage(
-                        imageUrl: '${AppImages.aiBackground}?auto=format&fit=crop&w=800&q=80',
-                        fit: BoxFit.cover,
-                        color: Colors.black.withOpacity(0.7),
-                        colorBlendMode: BlendMode.darken,
-                      ),
-              );
+                  opacity: _fadeAnimation.value,
+                  child: Image.asset(
+                    themeSettings.backgroundImage,
+                    fit: BoxFit.cover,
+                    //   color: Colors.black.withOpacity(0.7),
+                    //   colorBlendMode: BlendMode.darken,
+                  ));
             },
           ),
 
